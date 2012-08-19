@@ -1,0 +1,31 @@
+name: RoyalAuth
+main: org.royaldev.royalauth.RoyalAuth
+version: 0.1.0pre
+description: Offline mode management made easy
+softdepend: [Vault]
+
+commands:
+  login:
+    description: Logs a player in.
+    usage: /<command> [password]
+    aliases: [l, logon]
+
+  register:
+    description: Registers a player.
+    usage: /<command> [password]
+    aliases: [reg]
+
+  royalauth:
+    description: Manages RoyalAuth admin functions.
+    usage: /<command> [subcommand] (params)
+    aliases: [rauth]
+
+  changepass:
+    description: Changes a player's password.
+    usage: /<command> [oldPassword] [newPassword]
+    aliases: [changepassword]
+
+  logout:
+    description: Logs a player out.
+    usage: /<command>
+    aliases: [logoff]
