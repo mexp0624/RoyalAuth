@@ -18,6 +18,7 @@ import org.royaldev.royalauth.commands.CmdRoyalAuth;
 import org.royaldev.royalauth.listeners.RAuthListener;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -113,6 +114,14 @@ public class RoyalAuth extends JavaPlugin {
 
         instance = this;
         log = getLogger();
+
+        //-- Hidendra's MetricsLite --//
+
+        try {
+            new MetricsLite(this).start();
+        } catch (IOException e) {
+            getLogger().warning("Could not start Metrics!");
+        }
 
         //-- Permissions --//
 
