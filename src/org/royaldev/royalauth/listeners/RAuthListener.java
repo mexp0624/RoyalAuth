@@ -48,7 +48,7 @@ public class RAuthListener implements Listener {
             e.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Your name contains invalid characters!");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onLogin(PlayerJoinEvent e) {
         if (!plugin.sessionEnabled) return;
         int sLength = plugin.sessionLength;
@@ -60,9 +60,10 @@ public class RAuthListener implements Listener {
         }
         if (!cm.isLoggedIn(p.getName()) || !cm.isSessionValid(p, sLength))
             cm.logOut(p.getName()); // Log them out as they join - otherwise, exploits can be made
+        else plugin.getLogger().info(p.getName() + " was logged in via session.");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
         cm.updateLocation(p.getName(), p.getLocation());
@@ -70,7 +71,7 @@ public class RAuthListener implements Listener {
         cm.updateDate(p.getName(), newDate);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onKick(PlayerKickEvent e) {
         Player p = e.getPlayer();
         cm.updateLocation(p.getName(), p.getLocation());
