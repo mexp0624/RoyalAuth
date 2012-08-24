@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,7 +30,6 @@ public class ConnectionManager {
 
     private final List<String> loggedin = new ArrayList<String>();
 
-    private Statement stmt = null;
     private Connection c = null;
 
     private boolean offline = false;
@@ -41,7 +41,6 @@ public class ConnectionManager {
      */
     private void endOldConnections() throws SQLException {
         if (c != null) c.close();
-        if (stmt != null) stmt.close();
 
         if (pingerID > -1)
             RoyalAuth.instance.getServer().getScheduler().cancelTask(pingerID);
@@ -66,7 +65,6 @@ public class ConnectionManager {
                 return;
             } else throw e;
         }
-        stmt = c.createStatement();
         if (!c.isClosed()) pingerID = makePinger();
         else pingerID = -1;
         if (pingerID < 0)
@@ -103,18 +101,24 @@ public class ConnectionManager {
      */
     private int makePinger() {
         RoyalAuth plugin = RoyalAuth.instance;
+        final PreparedStatement s;
+        try {
+            s = c.prepareStatement("SELECT 1;");
+        } catch (SQLException e) {
+            return -1;
+        }
 
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 try {
-                    if (c.isClosed() || stmt.isClosed()) {
+                    if (c.isClosed()) {
                         RoyalAuth.instance.getLogger().severe("Lost connection to database. Attempting to restore.");
                         offline = true;
                         initiateConnection();
                         return;
                     }
-                    stmt.execute("SELECT 1;"); // ping
+                    s.execute();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -131,6 +135,7 @@ public class ConnectionManager {
      * @throws SQLException
      */
     private boolean makeDefaultTables() throws SQLException {
+        Statement stmt = c.createStatement();
         boolean use = stmt.execute("USE `" + database + "`;");
         boolean users = stmt.execute("CREATE TABLE IF NOT EXISTS `" + prefix + "users` (name text, password text, date long, ip text);");
         boolean locs = stmt.execute("CREATE TABLE IF NOT EXISTS `" + prefix + "locations` (name text, world text, x int, y int, z int, pitch float, yaw float);");
@@ -187,7 +192,9 @@ public class ConnectionManager {
      */
     public boolean isRegistered(String name) {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT 1 FROM `" + prefix + "users` WHERE `name` = '" + name + "';");
+            PreparedStatement s = c.prepareStatement("SELECT 1 FROM `" + prefix + "users` WHERE `name` = ?;");
+            s.setString(1, name);
+            ResultSet rs = s.executeQuery();
             rs.last();
             return rs.getRow() > 0;
         } catch (SQLException e) {
@@ -213,7 +220,12 @@ public class ConnectionManager {
             return false;
         }
         try {
-            stmt.execute("INSERT INTO `" + prefix + "users` VALUES ('" + name + "', '" + encPass + "', '" + date + "', '" + ip + "');");
+            PreparedStatement s = c.prepareStatement("INSERT INTO `" + prefix + "users` VALUES (?, ?, ?, ?);");
+            s.setString(1, name);
+            s.setString(2, encPass);
+            s.setLong(3, date);
+            s.setString(4, ip);
+            s.execute();
             synchronized (loggedin) {
                 loggedin.add(name);
             }
@@ -247,9 +259,16 @@ public class ConnectionManager {
      * @return true if location was set, false if not
      */
     public boolean setLocation(String name, Location loc) {
-        String sql = String.format("INSERT INTO `" + prefix + "locations` VALUES ('%s', '%s', %s, %s, %s, %s, %s);", name, loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw());
         try {
-            return stmt.execute(sql);
+            PreparedStatement s = c.prepareStatement("INSERT INTO `" + prefix + "locations` VALUES (?, ?, ?, ?, ?, ?, ?);");
+            s.setString(1, name);
+            s.setString(2, loc.getWorld().getName());
+            s.setDouble(3, loc.getX());
+            s.setDouble(4, loc.getY());
+            s.setDouble(5, loc.getZ());
+            s.setFloat(6, loc.getPitch());
+            s.setFloat(7, loc.getYaw());
+            return s.execute();
         } catch (Exception e) {
             return false;
         }
@@ -263,11 +282,21 @@ public class ConnectionManager {
      * @return true if location was updated, false if not
      */
     public boolean updateLocation(String name, Location loc) {
-        String sql = String.format("UPDATE `" + prefix + "locations` SET world = '%s', x = %s, y = %s, z = %s, pitch = %s, yaw = %s WHERE name = '%s';", loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw(), name);
         try {
-            ResultSet rs = stmt.executeQuery("SELECT 1 FROM `" + prefix + "locations` WHERE `name`='" + name + "';");
+            PreparedStatement s = c.prepareStatement("SELECT 1 FROM `" + prefix + "locations` WHERE name = ?;");
+            s.setString(1, name);
+            ResultSet rs = s.executeQuery();
             if (!rs.last()) return setLocation(name, loc);
-            return stmt.execute(sql);
+            s = c.prepareStatement("UPDATE `" + prefix + "locations` SET world = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, WHERE name = ?;");
+            s.setString(1, loc.getWorld().getName());
+            s.setDouble(2, loc.getX());
+            s.setDouble(3, loc.getY());
+            s.setDouble(4, loc.getZ());
+            s.setFloat(5, loc.getPitch());
+            s.setFloat(6, loc.getYaw());
+            s.setString(7, name);
+            s.execute();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -290,7 +319,10 @@ public class ConnectionManager {
             return null;
         }
         try {
-            ResultSet rs = stmt.executeQuery("SELECT 1 FROM `" + prefix + "users` WHERE `name`='" + name + "' AND `password`='" + password + "';");
+            PreparedStatement s = c.prepareStatement("SELECT 1 FROM `" + prefix + "users` WHERE name = ? AND password = ?;");
+            s.setString(1, name);
+            s.setString(2, password);
+            ResultSet rs = s.executeQuery();
             rs.last();
             boolean exists = rs.getRow() > 0;
             if (exists) synchronized (loggedin) {
@@ -350,7 +382,10 @@ public class ConnectionManager {
      */
     public boolean updateDate(String name, long date) {
         try {
-            return stmt.execute("UPDATE `" + prefix + "users` SET `date`=" + date + " WHERE `name`='" + name + "';");
+            PreparedStatement s = c.prepareStatement("UPDATE `" + prefix + "users` SET date=? WHERE name=?;");
+            s.setLong(1, date);
+            s.setString(2, name);
+            return s.execute();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -364,9 +399,10 @@ public class ConnectionManager {
      * @return The location the player will be sent to or null
      */
     public Location getLocation(String name) {
-        String sql = "SELECT x, y, z, pitch, yaw, world FROM `" + prefix + "locations` WHERE name = '" + name + "';";
         try {
-            ResultSet r = stmt.executeQuery(sql);
+            PreparedStatement s = c.prepareStatement("SELECT x, y, z, pitch, yaw, world FROM `" + prefix + "locations` WHERE name = ?;");
+            s.setString(1, name);
+            ResultSet r = s.executeQuery();
             boolean success = r.absolute(1);
             if (!success) return null;
             String world = r.getString("world");
@@ -395,9 +431,10 @@ public class ConnectionManager {
         length = length * 1000;
         long dates;
         String ip;
-        String sql = "SELECT date, ip FROM `" + prefix + "users` WHERE name = '" + p.getName() + "';";
         try {
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement s = c.prepareStatement("SELECT date, ip FROM `" + prefix + "users` WHERE name = ?;");
+            s.setString(1, p.getName());
+            ResultSet rs = s.executeQuery();
             boolean success = rs.absolute(1);
             if (!success) return false;
             dates = rs.getLong("date");
@@ -429,8 +466,13 @@ public class ConnectionManager {
             return false;
         }
         try {
-            stmt.execute("UPDATE `" + prefix + "users` SET `password`='" + encPass + "' WHERE `name`='" + name + "';");
-            ResultSet rs = stmt.executeQuery("SELECT `password` FROM `" + prefix + "users` WHERE `name`='" + name + "';");
+            PreparedStatement s = c.prepareStatement("UPDATE `" + prefix + "users` SET `password` = ? WHERE `name` = ?;");
+            s.setString(1, encPass);
+            s.setString(2, name);
+            s.execute();
+            s = c.prepareStatement("SELECT `password` FROM `" + prefix + "users` WHERE `name` = ?;");
+            s.setString(1, name);
+            ResultSet rs = s.executeQuery();
             rs.last();
             return rs.getString("password").equals(encPass);
         } catch (Exception e) {
@@ -460,8 +502,14 @@ public class ConnectionManager {
             return false;
         }
         try {
-            stmt.execute("UPDATE `" + prefix + "users` SET `password`='" + newEncPass + "' WHERE `name`='" + name + "' AND `password`='" + oldEncPass + "';");
-            ResultSet rs = stmt.executeQuery("SELECT `password` FROM `" + prefix + "users` WHERE `name`='" + name + "';");
+            PreparedStatement s = c.prepareStatement("UPDATE `" + prefix + "users` SET `password` = ? WHERE `name` = ? AND `password` = ?;");
+            s.setString(1, newEncPass);
+            s.setString(2, name);
+            s.setString(3, oldEncPass);
+            s.execute();
+            s = c.prepareStatement("SELECT `password` FROM `" + prefix + "users` WHERE `name` = ?;");
+            s.setString(1, name);
+            ResultSet rs = s.executeQuery();
             rs.last();
             return rs.getString("password").equals(newEncPass);
         } catch (Exception e) {
