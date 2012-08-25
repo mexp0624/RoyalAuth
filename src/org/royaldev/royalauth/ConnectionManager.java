@@ -287,7 +287,7 @@ public class ConnectionManager {
             s.setString(1, name);
             ResultSet rs = s.executeQuery();
             if (!rs.last()) return setLocation(name, loc);
-            s = c.prepareStatement("UPDATE `" + prefix + "locations` SET world = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ?, WHERE name = ?;");
+            s = c.prepareStatement("UPDATE `" + prefix + "locations` SET world = ?, x = ?, y = ?, z = ?, pitch = ?, yaw = ? WHERE name = ?;");
             s.setString(1, loc.getWorld().getName());
             s.setDouble(2, loc.getX());
             s.setDouble(3, loc.getY());
