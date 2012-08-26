@@ -59,7 +59,7 @@ public class RAuthListener implements Listener {
             e.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Your name contains invalid characters!");
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onLogin(PlayerJoinEvent e) {
         if (!plugin.sessionEnabled) return;
         int sLength = plugin.sessionLength;
