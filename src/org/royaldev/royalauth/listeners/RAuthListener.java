@@ -41,6 +41,17 @@ public class RAuthListener implements Listener {
     public final Map<String, Integer> loginReminders = new HashMap<String, Integer>();
 
     @EventHandler
+    public void onSameName(PlayerLoginEvent e) {
+        String name = e.getPlayer().getName();
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                e.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Another player is already online with this name!");
+                break;
+            }
+        }
+    }
+
+    @EventHandler
     public void kickInvalid(PlayerLoginEvent e) {
         Player p = e.getPlayer();
         String name = p.getName();
