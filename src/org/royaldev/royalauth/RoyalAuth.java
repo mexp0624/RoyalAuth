@@ -25,6 +25,10 @@ import java.util.logging.Logger;
 
 public class RoyalAuth extends JavaPlugin {
 
+    /*
+    * TODO: Kick players who try to login more than x times per x (5?) seconds
+     */
+
     public static RoyalAuth instance;
 
     public ConnectionManager cm;
@@ -173,7 +177,13 @@ public class RoyalAuth extends JavaPlugin {
     }
 
     public void onDisable() {
+
+        //-- Cancel all tasks --//
+
         getServer().getScheduler().cancelTasks(this);
+
+        //-- Alert users of reload --//
+
         for (Player p : getServer().getOnlinePlayers()) {
             if (!cm.isLoggedIn(p.getName())) continue;
             p.sendMessage(ChatColor.RED + "You have been logged out because of a reload.");

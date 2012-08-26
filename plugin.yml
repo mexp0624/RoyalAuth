@@ -1,6 +1,7 @@
 name: RoyalAuth
 main: org.royaldev.royalauth.RoyalAuth
 version: 0.1.0pre
+author: jkcclemens
 description: Offline mode management made easy
 softdepend: [Vault]
 
