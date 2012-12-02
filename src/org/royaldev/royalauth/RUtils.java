@@ -23,7 +23,7 @@ public class RUtils {
                 p.sendMessage(ChatColor.RED + "To login, do " + ChatColor.GRAY + "/login [password]");
             }
         };
-        return Bukkit.getScheduler().scheduleAsyncRepeatingTask(RoyalAuth.instance, r, 0, 200);
+        return Bukkit.getScheduler().scheduleSyncRepeatingTask(RoyalAuth.instance, r, 0, 200);
     }
 
     public static int createRegisterReminder(final Player p) {

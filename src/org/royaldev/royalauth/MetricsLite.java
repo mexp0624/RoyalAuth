@@ -254,7 +254,7 @@ public class MetricsLite {
         // The base is not necessarily relative to the startup directory.
         File pluginsFolder = plugin.getDataFolder().getParentFile();
 
-        // return => base/plugins/PluginMetrics/config.yml
+        // retur => base/plugins/PluginMetrics/config.yml
         return new File(new File(pluginsFolder, "PluginMetrics"), "config.yml");
     }
 

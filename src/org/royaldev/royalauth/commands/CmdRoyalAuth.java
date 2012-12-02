@@ -104,8 +104,10 @@ public class CmdRoyalAuth implements CommandExecutor {
                     return true;
                 }
                 boolean success = plugin.cm.changePassword(name, password);
-                if (success) cs.sendMessage(ChatColor.BLUE + "You have changed the password of " + ChatColor.GRAY + name + ChatColor.BLUE + ".");
-                else cs.sendMessage(ChatColor.RED + "Could not change the password of " + ChatColor.GRAY + name + ChatColor.RED + ".");
+                if (success)
+                    cs.sendMessage(ChatColor.BLUE + "You have changed the password of " + ChatColor.GRAY + name + ChatColor.BLUE + ".");
+                else
+                    cs.sendMessage(ChatColor.RED + "Could not change the password of " + ChatColor.GRAY + name + ChatColor.RED + ".");
                 if (p != null && success)
                     p.sendMessage(ChatColor.BLUE + "Your password has been changed by " + ChatColor.GRAY + cs.getName() + ChatColor.BLUE + ".");
             } else {

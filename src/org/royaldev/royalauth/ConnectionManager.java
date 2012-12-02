@@ -451,7 +451,7 @@ public class ConnectionManager {
     /**
      * Changes a player's password in the database. This method does not require the original password.
      * <p/>
-     * Will return false if not registered.
+     * Will retur false if not registered.
      *
      * @param name    Name of player to update for
      * @param newPass New password in plaintext - will be encrypted
@@ -484,7 +484,7 @@ public class ConnectionManager {
     /**
      * Changes a player's password in the database. This method requires the original password.
      * <p/>
-     * Will return false if not registered.
+     * Will retur false if not registered.
      *
      * @param name    Name of player to update for
      * @param oldPass Old password in plaintext - will be encrypted
