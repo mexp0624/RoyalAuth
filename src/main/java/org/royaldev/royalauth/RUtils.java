@@ -62,7 +62,7 @@ public class RUtils {
             public void run() {
                 if (Config.kickPlayers) {
                     AuthPlayer ap = AuthPlayer.getAuthPlayer(cs.getName());
-                    if (!ap.isLoggedIn() && ap.getLastJoinTimestamp() + (Config.kickAfter * 1000L) < System.currentTimeMillis()) {
+                    if (!ap.isLoggedIn() && ap.getLastJoinTimestamp() + (Config.kickAfter * 1000L) <= System.currentTimeMillis()) {
                         Player p = ap.getPlayer();
                         if (p != null) p.kickPlayer("You took too long to login!");
                     }
