@@ -1,0 +1,3 @@
+= RoyalAuth
+
+Plugin that locks accounts with passwords that must be entered before play. [Cool description here.]

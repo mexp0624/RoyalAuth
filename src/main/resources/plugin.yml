@@ -1,0 +1,27 @@
+name: RoyalAuth
+main: org.royaldev.royalauth.RoyalAuth
+version: ${pluginversion}
+author: jkcclemens
+website: http://dev.royaldev.org
+description: A security-based plugin that locks player accounts with passwords that must be entered before the player can play.
+
+commands:
+  royalauth:
+    description: Provides access to administrative functions of the plugin.
+    usage: /<command> [subcommands|help]
+    aliases: [ra]
+  login:
+    description: Logs a player in.
+    usage: /<command> [password]
+    aliases: [l, logon]
+  logout:
+    description: Logs a player out.
+    usage: /<command>
+    aliases: [logoff]
+  register:
+    description: Registers a player.
+    usage: /<command> [password]
+  changepassword:
+    description: Changes a player's password.
+    usage: /<command> [oldPassword] [newPassword]
+    aliases: [changepass, passchange]
