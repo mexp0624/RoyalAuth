@@ -145,7 +145,7 @@ public class AuthPlayer {
      * @return Digest type
      */
     public String getHashType() {
-        return pcm.getString("login.hash");
+        return pcm.getString("login.hash", "RAUTH");
     }
 
     /**
