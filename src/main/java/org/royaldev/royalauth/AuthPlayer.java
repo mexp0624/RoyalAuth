@@ -265,7 +265,7 @@ public class AuthPlayer {
      *
      * @param rawPassword Unencrypted password
      * @param hashType    What type of hash was used to encrypt the password (Java type)
-     * @return
+     * @return true if password set, false if otherwise
      */
     public boolean setPassword(String rawPassword, final String hashType) {
         try {

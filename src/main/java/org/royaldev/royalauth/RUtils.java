@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class RUtils {
 
     public static void dispNoPerms(CommandSender cs) {
-
+        cs.sendMessage(ChatColor.RED + "You do not have permission for that!");
     }
 
     /**
