@@ -23,8 +23,14 @@ login:
       look_around: true
       # Allow walking around (includes changing vision)?
       walk: false
-  # Should players that have yet to login have godmode?
-  godmode: true
+  godmode:
+    # Should players that have yet to login have godmode?
+    enabled: true
+    after_login:
+      # Enable god mode after the player logs in?
+      enabled: true
+      # Length in seconds
+      length: 10.0
   # Set players that are not logged in to adventure mode?
   adventure_mode: false
   # Teleport players to spawn?

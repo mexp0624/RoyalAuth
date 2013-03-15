@@ -97,7 +97,6 @@ public class CmdRoyalAuth implements CommandExecutor {
                 cs.sendMessage(ChatColor.RED + "Invalid subcommand. Try " + ChatColor.GRAY + "/" + label + " help" + ChatColor.RED + ".");
             }
             return true;
-            //AuthPlayer ap = AuthPlayer.getAuthPlayer(args[0]);
         }
         return false;
     }

@@ -44,10 +44,22 @@ public class AuthListener implements Listener {
         if (Config.sessionsEnabled && ap.isWithinSession()) {
             plugin.getLogger().info(p.getName() + " was logged in via session.");
             p.sendMessage(ChatColor.BLUE + "You have been logged in via session.");
+            ap.enableAfterLoginGodmode();
             ap.setLoggedIn(true);
             return;
         }
         ap.logout(plugin);
+    }
+
+    @EventHandler
+    public void godModeAfterLogin(EntityDamageEvent e) {
+        if (!Config.godModeAfterLogin) return;
+        if (!(e.getEntity() instanceof Player)) return;
+        Player p = (Player) e.getEntity();
+        AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
+        if (!ap.isInAfterLoginGodmode()) return;
+        e.setDamage(0);
+        e.setCancelled(true);
     }
 
     @EventHandler

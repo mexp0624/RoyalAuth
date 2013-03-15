@@ -35,7 +35,9 @@ public class Config {
         allowMovementWalk = c.getBoolean("login.restrictions.movement.walk");
         allowMovementLook = c.getBoolean("login.restrictions.movement.look_around");
 
-        godMode = c.getBoolean("login.godmode");
+        godMode = c.getBoolean("login.godmode.enabled");
+        godModeAfterLogin = c.getBoolean("login.godmode.after_login.enabled");
+        godModeLength = c.getLong("login.godmode.after_login.length");
 
         remindEnabled = c.getBoolean("login.remind.enabled");
         remindInterval = c.getLong("login.remind.interval");
@@ -58,12 +60,13 @@ public class Config {
         kickPlayers = c.getBoolean("login.remind.kick.enabled");
         kickAfter = c.getLong("login.remind.kick.wait");
 
-        //-- Check for invalid inputs and set to default if not --//
+        //-- Check for invalid inputs and set to default if invalid --//
 
         if (remindInterval < 1L) remindInterval = 30L;
         if (saveUserdataInterval < 1L) saveUserdataInterval = 5L;
         if (sessionLength < 1L) sessionLength = 15L;
         if (kickAfter < 0L) kickAfter = 0L;
+        if (godModeLength <= 0L) godModeLength = 10L;
     }
 
     public static boolean disableIfOnlineMode;
@@ -79,6 +82,8 @@ public class Config {
     public static boolean allowMovementLook;
 
     public static boolean godMode;
+    public static boolean godModeAfterLogin;
+    public static long godModeLength;
 
     public static boolean remindEnabled;
     public static long remindInterval;

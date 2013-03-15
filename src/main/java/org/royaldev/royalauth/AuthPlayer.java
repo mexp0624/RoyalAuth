@@ -167,6 +167,25 @@ public class AuthPlayer {
     }
 
     /**
+     * Turns on the god mode for post-login if enabled in the config. Will auto-expire.
+     */
+    public void enableAfterLoginGodmode() {
+        if (Config.godModeAfterLogin)
+            pcm.set("godmode_expires", System.currentTimeMillis() + Config.godModeLength * 1000L);
+    }
+
+    /**
+     * Checks if the player is in godmode from post-login godmode.
+     *
+     * @return true if in godmode, false if otherwise
+     */
+    public boolean isInAfterLoginGodmode() {
+        if (!Config.godModeAfterLogin) return false;
+        long expires = pcm.getLong("godmode_expires", 0L);
+        return expires >= System.currentTimeMillis();
+    }
+
+    /**
      * Logs an AP in. Does everything necessary to ensure a full login.
      */
     public void login() {
@@ -191,6 +210,7 @@ public class AuthPlayer {
             if (pcm.isSet("login.lastlocation")) p.teleport(pcm.getLocation("login.lastlocation"));
             pcm.set("login.lastlocation", null);
         }
+        enableAfterLoginGodmode();
         setLoggedIn(true);
     }
 
