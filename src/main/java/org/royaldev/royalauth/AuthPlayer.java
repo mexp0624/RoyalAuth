@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -312,7 +313,11 @@ public class AuthPlayer {
      * Updates the AP's IP address automatically
      */
     public void updateIPAddress() {
-        setLastIPAddress(getPlayer().getAddress().getAddress().toString());
+        Player p = getPlayer();
+        if (p == null) return;
+        InetSocketAddress isa = p.getAddress();
+        if (isa == null) return;
+        setLastIPAddress(isa.getAddress().toString());
     }
 
     /**
