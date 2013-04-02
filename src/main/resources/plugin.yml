@@ -9,7 +9,7 @@ commands:
   royalauth:
     description: Provides access to administrative functions of the plugin.
     usage: /<command> [subcommands|help]
-    aliases: [ra]
+    aliases: [ra, rauth]
   login:
     description: Logs a player in.
     usage: /<command> [password]
@@ -25,3 +25,34 @@ commands:
     description: Changes a player's password.
     usage: /<command> [oldPassword] [newPassword]
     aliases: [changepass, passchange]
+
+permissions:
+  rauth.login:
+    description: Allows use of /login
+    default: true
+  rauth.logout:
+    description: Allows use of /logout
+    default: true
+  rauth.register:
+    description: Allows use of /register
+    default: true
+  rauth.changepassword:
+    description: Allows use of /changepassword
+    default: true
+  rauth.royalauth:
+    description: Allows use of /rauth
+    default: op
+  rauth.user:
+    description: Contains all permission nodes for non-administrative functions
+    default: false
+    children:
+      rauth.login: true
+      rauth.logout: true
+      rauth.register: true
+      rauth.changepassword: true
+  rauth.*:
+    description: Contains every permission node in RoyalAuth
+    default: false
+    children:
+      rauth.user: true
+      rauth.royalauth: true
