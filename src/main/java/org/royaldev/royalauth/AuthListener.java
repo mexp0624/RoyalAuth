@@ -40,7 +40,6 @@ public class AuthListener implements Listener {
         Player p = e.getPlayer();
         AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
         ap.setLastJoinTimestamp(System.currentTimeMillis());
-        ap.updateIPAddress();
         if (Config.sessionsEnabled && ap.isWithinSession()) {
             plugin.getLogger().info(p.getName() + " was logged in via session.");
             p.sendMessage(ChatColor.BLUE + "You have been logged in via session.");
@@ -69,6 +68,7 @@ public class AuthListener implements Listener {
         ap.setLastQuitTimestamp(System.currentTimeMillis());
         BukkitTask reminder = ap.getCurrentReminderTask();
         if (reminder != null) reminder.cancel();
+        if (ap.isLoggedIn()) ap.updateLastIPAddress();
     }
 
     @EventHandler

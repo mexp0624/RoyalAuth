@@ -88,11 +88,10 @@ public class AuthPlayer {
      * @return true if in a session, false if not or sessions are off
      */
     public boolean isWithinSession() {
-        if (!Config.sessionsEnabled) return true;
+        if (!Config.sessionsEnabled) return false;
         if (lastLoginTimestamp <= 0L || lastQuitTimestamp <= 0L) return false;
         if (!isLoggedIn()) return false;
-        if (Config.sessionsCheckIP && !getPlayer().getAddress().getAddress().toString().replace("/", "").equals(lastIPAddress))
-            return false;
+        if (Config.sessionsCheckIP && !getCurrentIPAddress().equals(lastIPAddress)) return false;
         long validUntil = Config.sessionLength * 60000L + lastQuitTimestamp;
         return validUntil > System.currentTimeMillis();
     }
@@ -312,12 +311,23 @@ public class AuthPlayer {
     /**
      * Updates the AP's IP address automatically
      */
-    public void updateIPAddress() {
+    public void updateLastIPAddress() {
+        String ip = getCurrentIPAddress();
+        if (ip.isEmpty()) return;
+        setLastIPAddress(ip);
+    }
+
+    /**
+     * Gets the AuthPlayer's current IP address.
+     *
+     * @return IP address in String form or empty string if the player was null
+     */
+    public String getCurrentIPAddress() {
         Player p = getPlayer();
-        if (p == null) return;
+        if (p == null) return "";
         InetSocketAddress isa = p.getAddress();
-        if (isa == null) return;
-        setLastIPAddress(isa.getAddress().toString());
+        if (isa == null) return "";
+        return isa.getAddress().toString().replace("/", "");
     }
 
     /**
