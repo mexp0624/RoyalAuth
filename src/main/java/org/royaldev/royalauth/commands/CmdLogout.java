@@ -35,6 +35,8 @@ public class CmdLogout implements CommandExecutor {
                 return true;
             }
             cs.sendMessage(ChatColor.BLUE + "You have been logged out.");
+            ap.setLastQuitTimestamp(System.currentTimeMillis());
+            ap.setLastJoinTimestamp(System.currentTimeMillis());
             ap.logout(plugin);
             return true;
         }
