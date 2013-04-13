@@ -33,6 +33,14 @@ public class AuthListener implements Listener {
         plugin = instance;
     }
 
+    @EventHandler
+    public void sameName(PlayerLoginEvent e) {
+        if (!Config.kickIfAlreadyOnline) return;
+        AuthPlayer ap = AuthPlayer.getAuthPlayer(e.getPlayer());
+        if (!ap.isLoggedIn()) return;
+        e.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Another player is already online with this name.");
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent e) {
         if (plugin.getServer().getOnlineMode() && Config.disableIfOnlineMode) return;
