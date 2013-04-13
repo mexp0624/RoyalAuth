@@ -42,6 +42,8 @@ public class CmdRoyalAuth implements CommandExecutor {
                 cs.sendMessage(ChatColor.GRAY + "  /" + label + " changepassword [player] [newpassword]" + ChatColor.BLUE + " - Changes any player's password.");
                 cs.sendMessage(ChatColor.GRAY + "  /" + label + " login [player]" + ChatColor.BLUE + " - Logs a player in.");
                 cs.sendMessage(ChatColor.GRAY + "  /" + label + " logout [player]" + ChatColor.BLUE + " - Logs a player out.");
+                cs.sendMessage(ChatColor.GRAY + "  /" + label + " register [player] [password]" + ChatColor.BLUE + " - Registers a player.");
+                cs.sendMessage(ChatColor.GRAY + "  /" + label + " reload" + ChatColor.BLUE + " - Reloads the configuration from the disk.");
                 cs.sendMessage(ChatColor.GRAY + "  /" + label + " help" + ChatColor.BLUE + " - Displays this help.");
             } else if (subcommand.equals("changepassword")) {
                 if (args.length < 3) {
@@ -93,6 +95,31 @@ public class CmdRoyalAuth implements CommandExecutor {
                 }
                 ap.logout(plugin);
                 cs.sendMessage(ChatColor.BLUE + "Logged that player out.");
+            } else if (subcommand.equals("register")) {
+                if (args.length < 3) {
+                    cs.sendMessage(ChatColor.RED + "Not enough arguments. Try " + ChatColor.GRAY + "/" + label + " help" + ChatColor.RED + ".");
+                    return true;
+                }
+                OfflinePlayer op = plugin.getServer().getPlayer(args[1]);
+                if (op == null) op = plugin.getServer().getOfflinePlayer(args[1]);
+                AuthPlayer ap = AuthPlayer.getAuthPlayer(op.getName());
+                if (ap.isRegistered()) {
+                    cs.sendMessage(ChatColor.RED + "That player is already registered!");
+                    return true;
+                }
+                String rawPassword = args[2];
+                for (String disallowed : Config.disallowedPasswords) {
+                    if (!rawPassword.equalsIgnoreCase(disallowed)) continue;
+                    cs.sendMessage(ChatColor.RED + "That password is disallowed! Use a different one.");
+                    return true;
+                }
+                if (ap.setPassword(rawPassword, Config.passwordHashType))
+                    cs.sendMessage(ChatColor.BLUE + "Registered  " + ChatColor.GRAY + op.getName() + ChatColor.BLUE + " successfully.");
+                else
+                    cs.sendMessage(ChatColor.RED + "Could not register " + ChatColor.GRAY + op.getName() + ChatColor.RED + ".");
+            } else if (subcommand.equals("reload")) {
+                plugin.c.reloadConfiguration();
+                cs.sendMessage(ChatColor.BLUE + "Configuration reloaded.");
             } else {
                 cs.sendMessage(ChatColor.RED + "Invalid subcommand. Try " + ChatColor.GRAY + "/" + label + " help" + ChatColor.RED + ".");
             }
