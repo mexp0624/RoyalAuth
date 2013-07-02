@@ -1,6 +1,7 @@
 package org.royaldev.royalauth;
 
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.royaldev.royalauth.commands.CmdChangePassword;
@@ -86,6 +87,13 @@ public class RoyalAuth extends JavaPlugin {
             getLogger().warning("Could not start Metrics!");
         }
 
+        for (Player p : getServer().getOnlinePlayers()) {
+            AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
+            if (ap.isLoggedIn()) continue;
+            if (ap.isRegistered()) ap.createLoginReminder(this);
+            else ap.createRegisterReminder(this);
+        }
+
         log.info(getDescription().getName() + " v" + getDescription().getVersion() + " enabled.");
     }
 
@@ -93,7 +101,13 @@ public class RoyalAuth extends JavaPlugin {
     public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
 
+        for (Player p : getServer().getOnlinePlayers()) {
+            AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
+            if (ap.isLoggedIn()) ap.logout(this, false);
+        }
+
         PConfManager.saveAllManagers();
+        PConfManager.purge();
     }
 
 }

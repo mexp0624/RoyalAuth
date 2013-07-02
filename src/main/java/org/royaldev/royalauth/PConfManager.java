@@ -34,6 +34,12 @@ public class PConfManager extends YamlConfiguration {
         }
     }
 
+    public static void purge() {
+        synchronized (pcms) {
+            pcms.clear();
+        }
+    }
+
     private File pconfl = null;
     private final Object saveLock = new Object();
 

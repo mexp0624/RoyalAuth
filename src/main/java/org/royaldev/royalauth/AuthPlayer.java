@@ -216,15 +216,29 @@ public class AuthPlayer {
 
     /**
      * Logs a player out. This does the same as forcing a player to rejoin.
+     * <p/>
+     * This will schedule reminders for the player.
      *
      * @param plugin Plugin to register reminder events under
      */
     public void logout(Plugin plugin) {
+        logout(plugin, true);
+    }
+
+    /**
+     * Logs a player out. This does the same as forcing a player to rejoin.
+     *
+     * @param plugin          Plugin to register reminder events under
+     * @param createReminders If reminders should be created for the player
+     */
+    public void logout(Plugin plugin, boolean createReminders) {
         Player p = getPlayer();
         if (p == null) throw new IllegalArgumentException("That player is not online!");
         setLoggedIn(false);
-        if (isRegistered()) createLoginReminder(plugin);
-        else createRegisterReminder(plugin);
+        if (createReminders) {
+            if (isRegistered()) createLoginReminder(plugin);
+            else createRegisterReminder(plugin);
+        }
         final PConfManager pcm = getConfiguration();
         if (Config.adventureMode) {
             if (!pcm.isSet("login.gamemode")) pcm.set("login.gamemode", p.getGameMode().name());
