@@ -1,6 +1,5 @@
 package org.royaldev.royalauth;
 
-import org.apache.commons.lang.text.StrBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +22,7 @@ public class RUtils {
      */
     public static String colorize(final String message) {
         if (message == null) return null;
-        return message.replaceAll("(?i)&([a-f0-9k-or])", ChatColor.COLOR_CHAR + "$1");
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
     /**
@@ -89,11 +88,8 @@ public class RUtils {
      * @return Joined string
      */
     public static String getFinalArg(String[] array, int position) {
-        StrBuilder sb = new StrBuilder();
-        for (int i = position; i < array.length; i++) {
-            sb.append(array[i]);
-            sb.append(" ");
-        }
+        final StringBuilder sb = new StringBuilder();
+        for (int i = position; i < array.length; i++) sb.append(array[i]).append(" ");
         return sb.substring(0, sb.length() - 1);
     }
 

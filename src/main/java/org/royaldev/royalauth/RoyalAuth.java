@@ -22,7 +22,7 @@ public class RoyalAuth extends JavaPlugin {
 
     public static File dataFolder;
 
-    private final Pattern versionPattern = Pattern.compile("(\\d+\\.\\d+\\.\\d+)(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
+    private final Pattern versionPattern = Pattern.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
 
     /**
      * Registers a command in the server. If the command isn't defined in plugin.yml
@@ -62,27 +62,28 @@ public class RoyalAuth extends JavaPlugin {
 
         try {
             Matcher matcher = versionPattern.matcher(getDescription().getVersion());
-            matcher.matches();
-            // 1 = base version
-            // 2 = -SNAPSHOT
-            // 5 = build #
-            String versionMinusBuild = (matcher.group(1) == null) ? "Unknown" : matcher.group(1);
-            String build = (matcher.group(5) == null) ? "local build" : matcher.group(5);
-            if (matcher.group(2) == null) build = "release";
-            Metrics m = new Metrics(this);
-            Metrics.Graph g = m.createGraph("Version"); // get our custom version graph
-            g.addPlotter(
-                    new Metrics.Plotter(versionMinusBuild + "~=~" + build) {
-                        @Override
-                        public int getValue() {
-                            return 1; // this value doesn't matter
+            if (matcher.matches()) {
+                // 1 = base version
+                // 3 = -SNAPSHOT
+                // 6 = build #
+                String versionMinusBuild = (matcher.group(1) == null) ? "Unknown" : matcher.group(1);
+                String build = (matcher.group(6) == null) ? "local build" : matcher.group(6);
+                if (matcher.group(3) == null) build = "release";
+                Metrics m = new Metrics(this);
+                Metrics.Graph g = m.createGraph("Version"); // get our custom version graph
+                g.addPlotter(
+                        new Metrics.Plotter(versionMinusBuild + "~=~" + build) {
+                            @Override
+                            public int getValue() {
+                                return 1; // this value doesn't matter
+                            }
                         }
-                    }
-            ); // add the donut graph with major version inside and build outside
-            m.addGraph(g); // add the graph
-            if (!m.start())
-                getLogger().info("You have Metrics off! I like to keep accurate usage statistics, but okay. :(");
-            else getLogger().info("Metrics enabled. Thank you!");
+                ); // add the donut graph with major version inside and build outside
+                m.addGraph(g); // add the graph
+                if (!m.start())
+                    getLogger().info("You have Metrics off! I like to keep accurate usage statistics, but okay. :(");
+                else getLogger().info("Metrics enabled. Thank you!");
+            }
         } catch (Exception ignore) {
             getLogger().warning("Could not start Metrics!");
         }
