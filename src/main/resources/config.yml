@@ -3,6 +3,9 @@ login:
   disable_if_online_mode: false
   # Require a login to play?
   require: true
+  permission:
+    enabled: false
+    permission: "rauth.requirelogin"
   # Should a player that is already online and logged in be kicked if another player attempts to join as him?
   kick_if_already_online: false
   restrictions:

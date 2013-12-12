@@ -46,6 +46,7 @@ public class AuthListener implements Listener {
         if (plugin.getServer().getOnlineMode() && Config.disableIfOnlineMode) return;
         if (!Config.requireLogin) return;
         Player p = e.getPlayer();
+        if (Config.useLoginPermission && !p.hasPermission(Config.loginPermission)) return;
         AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
         ap.setLastJoinTimestamp(System.currentTimeMillis());
         if (Config.sessionsEnabled && ap.isWithinSession()) {

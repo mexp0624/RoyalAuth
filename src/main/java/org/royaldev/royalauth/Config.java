@@ -27,6 +27,9 @@ public class Config {
         requireLogin = c.getBoolean("login.require");
         kickIfAlreadyOnline = c.getBoolean("login.kick_if_already_online");
 
+        useLoginPermission = c.getBoolean("login.permission.enabled");
+        loginPermission = c.getString("login.permission.permission");
+
         allowChat = c.getBoolean("login.restrictions.chat.allowed");
         chatPrefix = c.getString("login.restrictions.chat.prefix");
 
@@ -73,6 +76,9 @@ public class Config {
     public static boolean disableIfOnlineMode;
     public static boolean requireLogin;
     public static boolean kickIfAlreadyOnline;
+
+    public static boolean useLoginPermission;
+    public static String loginPermission;
 
     public static boolean allowChat;
     public static String chatPrefix;
