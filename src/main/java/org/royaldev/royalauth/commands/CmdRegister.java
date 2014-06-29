@@ -17,7 +17,7 @@ public class CmdRegister implements CommandExecutor {
     private final RoyalAuth plugin;
 
     public CmdRegister(RoyalAuth instance) {
-        plugin = instance;
+        this.plugin = instance;
     }
 
     @Override
@@ -48,11 +48,11 @@ public class CmdRegister implements CommandExecutor {
                 return true;
             }
             if (ap.setPassword(rawPassword, Config.passwordHashType)) {
-                plugin.getLogger().info(p.getName() + " " + Language.HAS_REGISTERED);
+                this.plugin.getLogger().info(p.getName() + " " + Language.HAS_REGISTERED);
                 cs.sendMessage(ChatColor.BLUE + Language.PASSWORD_SET_AND_REGISTERED.toString());
                 BukkitTask reminder = ap.getCurrentReminderTask();
                 if (reminder != null) reminder.cancel();
-                ap.createLoginReminder(plugin);
+                ap.createLoginReminder(this.plugin);
             } else cs.sendMessage(ChatColor.RED + Language.PASSWORD_COULD_NOT_BE_SET.toString());
             return true;
         }

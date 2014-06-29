@@ -52,7 +52,7 @@ public class AuthListener implements Listener {
     private final RoyalAuth plugin;
 
     public AuthListener(RoyalAuth instance) {
-        plugin = instance;
+        this.plugin = instance;
     }
 
     @EventHandler
@@ -65,20 +65,20 @@ public class AuthListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent e) {
-        if (plugin.getServer().getOnlineMode() && Config.disableIfOnlineMode) return;
+        if (this.plugin.getServer().getOnlineMode() && Config.disableIfOnlineMode) return;
         if (!Config.requireLogin) return;
         Player p = e.getPlayer();
         if (Config.useLoginPermission && !p.hasPermission(Config.loginPermission)) return;
         AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
         ap.setLastJoinTimestamp(System.currentTimeMillis());
         if (Config.sessionsEnabled && ap.isWithinSession()) {
-            plugin.getLogger().info(p.getName() + Language.WAS_LOGGED_IN_VIA_SESSION);
+            this.plugin.getLogger().info(p.getName() + Language.WAS_LOGGED_IN_VIA_SESSION);
             p.sendMessage(ChatColor.BLUE + Language.LOGGED_IN_VIA_SESSION.toString());
             ap.enableAfterLoginGodmode();
             ap.setLoggedIn(true);
             return;
         }
-        ap.logout(plugin);
+        ap.logout(this.plugin);
     }
 
     @EventHandler
@@ -147,9 +147,9 @@ public class AuthListener implements Listener {
             if (!allowed.equalsIgnoreCase(e.getMessage().substring(1))) continue;
             return;
         }
-        PluginCommand pc = plugin.getCommand(root);
+        PluginCommand pc = this.plugin.getCommand(root);
         if (pc == null) {
-            pc = plugin.getServer().getPluginCommand(root);
+            pc = this.plugin.getServer().getPluginCommand(root);
             if (pc != null) {
                 if (Config.allowedCommands.contains(pc.getName())) return;
                 for (String alias : pc.getAliases()) if (Config.allowedCommands.contains(alias)) return;

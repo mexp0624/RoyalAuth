@@ -15,7 +15,7 @@ public class Hasher {
     }
 
     private static String hash(String data, String type) throws NoSuchAlgorithmException {
-        String rtype = getType(type);
+        String rtype = Hasher.getType(type);
         if (rtype.equals("RAUTH")) rtype = "SHA-512";
         MessageDigest md = MessageDigest.getInstance(rtype);
         md.update(data.getBytes());
@@ -26,10 +26,10 @@ public class Hasher {
     }
 
     public static String encrypt(String data, String type) throws NoSuchAlgorithmException {
-        final String rtype = getType(type);
+        final String rtype = Hasher.getType(type);
         if (rtype.equals("RAUTH")) {
-            for (int i = 0; i < 25; i++) data = hash(data, rtype);
+            for (int i = 0; i < 25; i++) data = Hasher.hash(data, rtype);
             return data;
-        } else return hash(data, rtype);
+        } else return Hasher.hash(data, rtype);
     }
 }

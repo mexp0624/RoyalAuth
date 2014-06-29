@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class AuthPlayer {
 
-    private final static Map<UUID, AuthPlayer> authPlayers = new HashMap<UUID, AuthPlayer>();
+    private final static Map<UUID, AuthPlayer> authPlayers = new HashMap<>();
     private final PConfManager pcm;
     private UUID playerUUID;
     private String lastIPAddress;
@@ -24,11 +24,11 @@ public class AuthPlayer {
     private BukkitTask reminderTask = null;
 
     private AuthPlayer(UUID u) {
-        playerUUID = u;
-        pcm = PConfManager.getPConfManager(u);
-        lastJoinTimestamp = pcm.getLong("timestamps.join", 0L);
-        lastLoginTimestamp = pcm.getLong("timestamps.login", 0L);
-        lastQuitTimestamp = pcm.getLong("timestamps.quit", 0L);
+        this.playerUUID = u;
+        this.pcm = PConfManager.getPConfManager(u);
+        this.lastJoinTimestamp = this.pcm.getLong("timestamps.join", 0L);
+        this.lastLoginTimestamp = this.pcm.getLong("timestamps.login", 0L);
+        this.lastQuitTimestamp = this.pcm.getLong("timestamps.quit", 0L);
     }
 
     private AuthPlayer(Player p) {
@@ -42,10 +42,10 @@ public class AuthPlayer {
      * @return AuthPlayer
      */
     public static AuthPlayer getAuthPlayer(UUID u) {
-        synchronized (authPlayers) {
-            if (authPlayers.containsKey(u)) return authPlayers.get(u);
+        synchronized (AuthPlayer.authPlayers) {
+            if (AuthPlayer.authPlayers.containsKey(u)) return AuthPlayer.authPlayers.get(u);
             final AuthPlayer ap = new AuthPlayer(u);
-            authPlayers.put(u, ap);
+            AuthPlayer.authPlayers.put(u, ap);
             return ap;
         }
     }
@@ -73,7 +73,7 @@ public class AuthPlayer {
      * @return AuthPlayer
      */
     public static AuthPlayer getAuthPlayer(Player p) {
-        return getAuthPlayer(p.getUniqueId());
+        return AuthPlayer.getAuthPlayer(p.getUniqueId());
     }
 
     /**
@@ -82,7 +82,7 @@ public class AuthPlayer {
      * @return true if registered, false if not
      */
     public boolean isRegistered() {
-        return pcm.isSet("login.password");
+        return this.pcm.isSet("login.password");
     }
 
     /**
@@ -91,7 +91,7 @@ public class AuthPlayer {
      * @return true if logged in, false if not
      */
     public boolean isLoggedIn() {
-        return pcm.getBoolean("login.logged_in");
+        return this.pcm.getBoolean("login.logged_in");
     }
 
     /**
@@ -100,7 +100,7 @@ public class AuthPlayer {
      * @param loggedIn true if logged in, false if not
      */
     public void setLoggedIn(final boolean loggedIn) {
-        pcm.set("login.logged_in", loggedIn);
+        this.pcm.set("login.logged_in", loggedIn);
     }
 
     /**
@@ -110,10 +110,10 @@ public class AuthPlayer {
      */
     public boolean isWithinSession() {
         if (!Config.sessionsEnabled) return false;
-        if (lastLoginTimestamp <= 0L || lastQuitTimestamp <= 0L) return false;
-        if (!isLoggedIn()) return false;
-        if (Config.sessionsCheckIP && !getCurrentIPAddress().equals(lastIPAddress)) return false;
-        long validUntil = Config.sessionLength * 60000L + lastQuitTimestamp;
+        if (this.lastLoginTimestamp <= 0L || this.lastQuitTimestamp <= 0L) return false;
+        if (!this.isLoggedIn()) return false;
+        if (Config.sessionsCheckIP && !getCurrentIPAddress().equals(this.lastIPAddress)) return false;
+        long validUntil = Config.sessionLength * 60000L + this.lastQuitTimestamp;
         return validUntil > System.currentTimeMillis();
     }
 
@@ -125,9 +125,9 @@ public class AuthPlayer {
      * @return true if password changed, false if not
      */
     public boolean setHashedPassword(String hashedPassword, String oldHashedPassword, final String hashType) {
-        if (!getPasswordHash().equals(oldHashedPassword)) return false;
-        pcm.set("login.password", hashedPassword);
-        pcm.set("login.hash", hashType.toUpperCase());
+        if (!this.getPasswordHash().equals(oldHashedPassword)) return false;
+        this.pcm.set("login.password", hashedPassword);
+        this.pcm.set("login.hash", hashType.toUpperCase());
         return true;
     }
 
@@ -140,7 +140,7 @@ public class AuthPlayer {
      * @return true if password changed, false if not
      */
     public boolean setPassword(String rawPassword, String rawOldPassword, final String hashType) {
-        String oldPasswordHash = (!getHashType().equalsIgnoreCase(hashType)) ? getHashType() : hashType;
+        final String oldPasswordHash = (!getHashType().equalsIgnoreCase(hashType)) ? getHashType() : hashType;
         try {
             rawPassword = Hasher.encrypt(rawPassword, hashType);
             rawOldPassword = Hasher.encrypt(rawOldPassword, oldPasswordHash);
@@ -148,7 +148,7 @@ public class AuthPlayer {
             e.printStackTrace();
             return false;
         }
-        return setHashedPassword(rawPassword, rawOldPassword, hashType);
+        return this.setHashedPassword(rawPassword, rawOldPassword, hashType);
     }
 
     /**
@@ -157,7 +157,7 @@ public class AuthPlayer {
      * @return Hashed password
      */
     public String getPasswordHash() {
-        return pcm.getString("login.password");
+        return this.pcm.getString("login.password");
     }
 
     /**
@@ -166,7 +166,7 @@ public class AuthPlayer {
      * @return Digest type
      */
     public String getHashType() {
-        return pcm.getString("login.hash", "RAUTH");
+        return this.pcm.getString("login.hash", "RAUTH");
     }
 
     /**
@@ -175,7 +175,7 @@ public class AuthPlayer {
      * @return PConfManager
      */
     public PConfManager getConfiguration() {
-        return pcm;
+        return this.pcm;
     }
 
     /**
@@ -183,7 +183,7 @@ public class AuthPlayer {
      */
     public void enableAfterLoginGodmode() {
         if (Config.godModeAfterLogin)
-            pcm.set("godmode_expires", System.currentTimeMillis() + Config.godModeLength * 1000L);
+            this.pcm.set("godmode_expires", System.currentTimeMillis() + Config.godModeLength * 1000L);
     }
 
     /**
@@ -193,7 +193,7 @@ public class AuthPlayer {
      */
     public boolean isInAfterLoginGodmode() {
         if (!Config.godModeAfterLogin) return false;
-        long expires = pcm.getLong("godmode_expires", 0L);
+        final long expires = pcm.getLong("godmode_expires", 0L);
         return expires >= System.currentTimeMillis();
     }
 
@@ -201,11 +201,11 @@ public class AuthPlayer {
      * Logs an AP in. Does everything necessary to ensure a full login.
      */
     public void login() {
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (p == null) throw new IllegalArgumentException("That player is not online!");
-        setLoggedIn(true);
-        setLastLoginTimestamp(System.currentTimeMillis());
-        BukkitTask reminder = getCurrentReminderTask();
+        this.setLoggedIn(true);
+        this.setLastLoginTimestamp(System.currentTimeMillis());
+        final BukkitTask reminder = this.getCurrentReminderTask();
         if (reminder != null) reminder.cancel();
         final PConfManager pcm = getConfiguration();
         if (Config.adventureMode) {
@@ -222,8 +222,8 @@ public class AuthPlayer {
             if (pcm.isSet("login.lastlocation")) p.teleport(pcm.getLocation("login.lastlocation"));
             pcm.set("login.lastlocation", null);
         }
-        enableAfterLoginGodmode();
-        setLoggedIn(true);
+        this.enableAfterLoginGodmode();
+        this.setLoggedIn(true);
     }
 
     /**
@@ -234,7 +234,7 @@ public class AuthPlayer {
      * @param plugin Plugin to register reminder events under
      */
     public void logout(Plugin plugin) {
-        logout(plugin, true);
+        this.logout(plugin, true);
     }
 
     /**
@@ -244,12 +244,12 @@ public class AuthPlayer {
      * @param createReminders If reminders should be created for the player
      */
     public void logout(Plugin plugin, boolean createReminders) {
-        Player p = getPlayer();
+        final Player p = getPlayer();
         if (p == null) throw new IllegalArgumentException(Language.PLAYER_NOT_ONLINE.toString());
-        setLoggedIn(false);
+        this.setLoggedIn(false);
         if (createReminders) {
-            if (isRegistered()) createLoginReminder(plugin);
-            else createRegisterReminder(plugin);
+            if (this.isRegistered()) this.createLoginReminder(plugin);
+            else this.createRegisterReminder(plugin);
         }
         final PConfManager pcm = getConfiguration();
         if (Config.adventureMode) {
@@ -260,7 +260,7 @@ public class AuthPlayer {
             if (!pcm.isSet("login.lastlocation")) pcm.setLocation("login.lastlocation", p.getLocation());
             p.teleport(p.getLocation().getWorld().getSpawnLocation());
         }
-        setLoggedIn(false);
+        this.setLoggedIn(false);
     }
 
     /**
@@ -269,8 +269,8 @@ public class AuthPlayer {
      * @param timestamp Time in milliseconds from epoch
      */
     public void setLastLoginTimestamp(final long timestamp) {
-        lastLoginTimestamp = timestamp;
-        pcm.set("timestamps.login", timestamp);
+        this.lastLoginTimestamp = timestamp;
+        this.pcm.set("timestamps.login", timestamp);
     }
 
     /**
@@ -279,8 +279,8 @@ public class AuthPlayer {
      * @param timestamp Time in milliseconds from epoch
      */
     public void setLastQuitTimestamp(final long timestamp) {
-        lastQuitTimestamp = timestamp;
-        pcm.set("timestamps.quit", timestamp);
+        this.lastQuitTimestamp = timestamp;
+        this.pcm.set("timestamps.quit", timestamp);
     }
 
     /**
@@ -291,8 +291,8 @@ public class AuthPlayer {
      * @return true
      */
     public boolean setHashedPassword(String newPasswordHash, final String hashType) {
-        pcm.set("login.password", newPasswordHash);
-        pcm.set("login.hash", hashType);
+        this.pcm.set("login.password", newPasswordHash);
+        this.pcm.set("login.hash", hashType);
         return true;
     }
 
@@ -310,8 +310,8 @@ public class AuthPlayer {
             e.printStackTrace();
             return false;
         }
-        pcm.set("login.password", rawPassword);
-        pcm.set("login.hash", hashType);
+        this.pcm.set("login.password", rawPassword);
+        this.pcm.set("login.hash", hashType);
         return true;
     }
 
@@ -321,16 +321,16 @@ public class AuthPlayer {
      * @param ip IP Address (IPv6 or IPv4 will work, as long as they are consistent)
      */
     public void setLastIPAddress(String ip) {
-        lastIPAddress = ip.replace("/", "");
+        this.lastIPAddress = ip.replace("/", "");
     }
 
     /**
      * Updates the AP's IP address automatically
      */
     public void updateLastIPAddress() {
-        String ip = getCurrentIPAddress();
+        final String ip = getCurrentIPAddress();
         if (ip.isEmpty()) return;
-        setLastIPAddress(ip);
+        this.setLastIPAddress(ip);
     }
 
     /**
@@ -339,9 +339,9 @@ public class AuthPlayer {
      * @return IP address in String form or empty string if the player was null
      */
     public String getCurrentIPAddress() {
-        Player p = getPlayer();
+        final Player p = this.getPlayer();
         if (p == null) return "";
-        InetSocketAddress isa = p.getAddress();
+        final InetSocketAddress isa = p.getAddress();
         if (isa == null) return "";
         return isa.getAddress().toString().replace("/", "");
     }
@@ -352,7 +352,7 @@ public class AuthPlayer {
      * @return Task or null if no task
      */
     public BukkitTask getCurrentReminderTask() {
-        return reminderTask;
+        return this.reminderTask;
     }
 
     /**
@@ -362,8 +362,8 @@ public class AuthPlayer {
      * @return Task created
      */
     public BukkitTask createLoginReminder(Plugin p) {
-        reminderTask = RUtils.createLoginReminder(getPlayer(), p);
-        return getCurrentReminderTask();
+        this.reminderTask = RUtils.createLoginReminder(getPlayer(), p);
+        return this.getCurrentReminderTask();
     }
 
     /**
@@ -373,8 +373,8 @@ public class AuthPlayer {
      * @return Task created
      */
     public BukkitTask createRegisterReminder(Plugin p) {
-        reminderTask = RUtils.createRegisterReminder(getPlayer(), p);
-        return getCurrentReminderTask();
+        this.reminderTask = RUtils.createRegisterReminder(getPlayer(), p);
+        return this.getCurrentReminderTask();
     }
 
     /**
@@ -401,7 +401,7 @@ public class AuthPlayer {
      * @return Timestamp in milliseconds from epoch
      */
     public long getLastJoinTimestamp() {
-        return lastJoinTimestamp;
+        return this.lastJoinTimestamp;
     }
 
     /**
@@ -410,8 +410,8 @@ public class AuthPlayer {
      * @param timestamp Time in milliseconds from epoch
      */
     public void setLastJoinTimestamp(final long timestamp) {
-        lastJoinTimestamp = timestamp;
-        pcm.set("timestamps.join", timestamp);
+        this.lastJoinTimestamp = timestamp;
+        this.pcm.set("timestamps.join", timestamp);
     }
 
 }

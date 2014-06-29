@@ -37,7 +37,7 @@ public class RoyalAuth extends JavaPlugin {
         try {
             jp.getCommand(command).setExecutor(ce);
         } catch (NullPointerException e) {
-            getLogger().warning(String.format(Language.COULD_NOT_REGISTER_COMMAND.toString(), command, e.getMessage()));
+            jp.getLogger().warning(String.format(Language.COULD_NOT_REGISTER_COMMAND.toString(), command, e.getMessage()));
         }
     }
 
@@ -76,9 +76,9 @@ public class RoyalAuth extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getScheduler().cancelTasks(this);
+        this.getServer().getScheduler().cancelTasks(this);
 
-        for (Player p : getServer().getOnlinePlayers()) {
+        for (Player p : this.getServer().getOnlinePlayers()) {
             AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
             if (ap.isLoggedIn()) ap.logout(this, false);
         }
@@ -89,34 +89,34 @@ public class RoyalAuth extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        dataFolder = getDataFolder();
+        RoyalAuth.dataFolder = this.getDataFolder();
 
-        if (!new File(getDataFolder(), "config.yml").exists()) saveDefaultConfig();
+        if (!new File(getDataFolder(), "config.yml").exists()) this.saveDefaultConfig();
 
-        c = new Config(this);
-        log = getLogger();
+        this.c = new Config(this);
+        this.log = this.getLogger();
 
-        saveLangFile("en_us");
+        this.saveLangFile("en_us");
 
         try {
-            new Language.LanguageHelper(getDataFolder() + File.separator + getConfig().getString("general.language_file", "lang/en_us.properties"));
+            new Language.LanguageHelper(new File(this.getDataFolder(), this.getConfig().getString("general.language_file", "lang/en_us.properties")));
         } catch (IOException e) {
-            log.severe("Could not load language file: " + e.getMessage());
-            log.severe("Disabling plugin.");
-            setEnabled(false);
+            this.log.severe("Could not load language file: " + e.getMessage());
+            this.log.severe("Disabling plugin.");
+            this.setEnabled(false);
             return;
         }
 
         if (Config.checkOldUserdata) this.update();
 
-        PluginManager pm = getServer().getPluginManager();
+        PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new AuthListener(this), this);
 
-        registerCommand(new CmdRoyalAuth(this), "royalauth", this);
-        registerCommand(new CmdLogin(this), "login", this);
-        registerCommand(new CmdLogout(this), "logout", this);
-        registerCommand(new CmdRegister(this), "register", this);
-        registerCommand(new CmdChangePassword(), "changepassword", this);
+        this.registerCommand(new CmdRoyalAuth(this), "royalauth", this);
+        this.registerCommand(new CmdLogin(this), "login", this);
+        this.registerCommand(new CmdLogout(this), "logout", this);
+        this.registerCommand(new CmdRegister(this), "register", this);
+        this.registerCommand(new CmdChangePassword(), "changepassword", this);
 
         //-- Hidendra's Metrics --//
 
@@ -138,11 +138,11 @@ public class RoyalAuth extends JavaPlugin {
                     }
                 }); // add the donut graph with major version inside and build outside
                 m.addGraph(g); // add the graph
-                if (!m.start()) getLogger().info(Language.METRICS_OFF.toString());
-                else getLogger().info(Language.METRICS_ENABLED.toString());
+                if (!m.start()) this.getLogger().info(Language.METRICS_OFF.toString());
+                else this.getLogger().info(Language.METRICS_ENABLED.toString());
             }
         } catch (Exception ignore) {
-            getLogger().warning(Language.COULD_NOT_START_METRICS.toString());
+            this.getLogger().warning(Language.COULD_NOT_START_METRICS.toString());
         }
 
         for (Player p : this.getServer().getOnlinePlayers()) {
@@ -152,7 +152,7 @@ public class RoyalAuth extends JavaPlugin {
             else ap.createRegisterReminder(this);
         }
 
-        log.info(getDescription().getName() + " v" + getDescription().getVersion() + " " + Language.ENABLED + ".");
+        this.log.info(this.getDescription().getName() + " v" + this.getDescription().getVersion() + " " + Language.ENABLED + ".");
     }
 
 }

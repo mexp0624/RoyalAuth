@@ -19,7 +19,7 @@ public class CmdLogin implements CommandExecutor {
     private final RoyalAuth plugin;
 
     public CmdLogin(RoyalAuth instance) {
-        plugin = instance;
+        this.plugin = instance;
     }
 
     @Override
@@ -60,10 +60,10 @@ public class CmdLogin implements CommandExecutor {
             String realPassword = ap.getPasswordHash();
             if (rawPassword.equals(realPassword)) {
                 ap.login();
-                plugin.getLogger().info(p.getName() + " " + Language.HAS_LOGGED_IN);
+                this.plugin.getLogger().info(p.getName() + " " + Language.HAS_LOGGED_IN);
                 cs.sendMessage(ChatColor.BLUE + Language.LOGGED_IN_SUCCESSFULLY.toString());
             } else {
-                plugin.getLogger().warning(p.getName() + Language.USED_INCORRECT_PASSWORD);
+                this.plugin.getLogger().warning(p.getName() + Language.USED_INCORRECT_PASSWORD);
                 cs.sendMessage(ChatColor.RED + Language.INCORRECT_PASSWORD.toString());
             }
             return true;

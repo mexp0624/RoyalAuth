@@ -39,18 +39,18 @@ public class Config {
     private final RoyalAuth plugin;
 
     public Config(RoyalAuth instance) {
-        plugin = instance;
-        File config = new File(plugin.getDataFolder(), "config.yml");
+        this.plugin = instance;
+        final File config = new File(plugin.getDataFolder(), "config.yml");
         if (!config.exists()) {
-            if (!config.getParentFile().mkdirs()) plugin.getLogger().warning("Could not create config.yml directory.");
-            plugin.saveDefaultConfig();
+            if (!config.getParentFile().mkdirs()) this.plugin.getLogger().warning("Could not create config.yml directory.");
+            this.plugin.saveDefaultConfig();
         }
-        reloadConfiguration();
+        this.reloadConfiguration();
     }
 
     public void reloadConfiguration() {
-        plugin.reloadConfig();
-        FileConfiguration c = plugin.getConfig();
+        this.plugin.reloadConfig();
+        final FileConfiguration c = this.plugin.getConfig();
 
         disableIfOnlineMode = c.getBoolean("login.disable_if_online_mode");
         requireLogin = c.getBoolean("login.require");

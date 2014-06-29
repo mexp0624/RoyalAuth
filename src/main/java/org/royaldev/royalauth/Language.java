@@ -99,7 +99,7 @@ public enum Language {
          * @return String or "Language property "node" not defined."
          */
         private static String getString(String node) {
-            String prop = p.getProperty(node);
+            String prop = LanguageHelper.p.getProperty(node);
             if (prop == null) prop = "Language property \"" + node + "\" not defined.";
             return prop;
         }

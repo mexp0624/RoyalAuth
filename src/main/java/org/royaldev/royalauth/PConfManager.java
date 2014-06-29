@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class PConfManager extends YamlConfiguration {
 
-    private static final Map<UUID, PConfManager> pcms = new HashMap<UUID, PConfManager>();
+    private static final Map<UUID, PConfManager> pcms = new HashMap<>();
     private final Object saveLock = new Object();
     private File pconfl = null;
 
@@ -26,9 +26,9 @@ public class PConfManager extends YamlConfiguration {
     PConfManager(OfflinePlayer p) {
         super();
         File dataFolder = RoyalAuth.dataFolder;
-        pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + p.getUniqueId() + ".yml");
+        this.pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + p.getUniqueId() + ".yml");
         try {
-            load(pconfl);
+            load(this.pconfl);
         } catch (Exception ignored) {
         }
     }
@@ -41,9 +41,9 @@ public class PConfManager extends YamlConfiguration {
     PConfManager(UUID u) {
         super();
         File dataFolder = RoyalAuth.dataFolder;
-        pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + u + ".yml");
+        this.pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + u + ".yml");
         try {
-            load(pconfl);
+            load(this.pconfl);
         } catch (Exception ignored) {
         }
     }
@@ -56,46 +56,46 @@ public class PConfManager extends YamlConfiguration {
     }
 
     public static PConfManager getPConfManager(Player p) {
-        return getPConfManager(p.getUniqueId());
+        return PConfManager.getPConfManager(p.getUniqueId());
     }
 
     public static PConfManager getPConfManager(UUID u) {
-        synchronized (pcms) {
-            if (pcms.containsKey(u)) return pcms.get(u);
+        synchronized (PConfManager.pcms) {
+            if (PConfManager.pcms.containsKey(u)) return PConfManager.pcms.get(u);
             final PConfManager pcm = new PConfManager(u);
-            pcms.put(u, pcm);
+            PConfManager.pcms.put(u, pcm);
             return pcm;
         }
     }
 
     public static void saveAllManagers() {
-        synchronized (pcms) {
-            for (PConfManager pcm : pcms.values()) pcm.forceSave();
+        synchronized (PConfManager.pcms) {
+            for (PConfManager pcm : PConfManager.pcms.values()) pcm.forceSave();
         }
     }
 
     public static void purge() {
-        synchronized (pcms) {
-            pcms.clear();
+        synchronized (PConfManager.pcms) {
+            PConfManager.pcms.clear();
         }
     }
 
     public boolean exists() {
-        return pconfl.exists();
+        return this.pconfl.exists();
     }
 
     public boolean createFile() {
         try {
-            return pconfl.createNewFile();
+            return this.pconfl.createNewFile();
         } catch (IOException ignored) {
             return false;
         }
     }
 
     public void forceSave() {
-        synchronized (saveLock) {
+        synchronized (this.saveLock) {
             try {
-                save(pconfl);
+                save(this.pconfl);
             } catch (IOException ignored) {
             }
         }
@@ -110,13 +110,13 @@ public class PConfManager extends YamlConfiguration {
      * @return Location or null if path does not exist or if config doesn't exist
      */
     public Location getLocation(String path) {
-        if (get(path) == null) return null;
-        String world = getString(path + ".w");
-        double x = getDouble(path + ".x");
-        double y = getDouble(path + ".y");
-        double z = getDouble(path + ".z");
-        float pitch = getFloat(path + ".pitch");
-        float yaw = getFloat(path + ".yaw");
+        if (this.get(path) == null) return null;
+        String world = this.getString(path + ".w");
+        double x = this.getDouble(path + ".x");
+        double y = this.getDouble(path + ".y");
+        double z = this.getDouble(path + ".z");
+        float pitch = this.getFloat(path + ".pitch");
+        float yaw = this.getFloat(path + ".yaw");
         return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
     }
 
@@ -127,15 +127,15 @@ public class PConfManager extends YamlConfiguration {
      * @param path  Path in the yml to set
      */
     public void setLocation(String path, Location value) {
-        set(path + ".w", value.getWorld().getName());
-        set(path + ".x", value.getX());
-        set(path + ".y", value.getY());
-        set(path + ".z", value.getZ());
-        set(path + ".pitch", value.getPitch());
-        set(path + ".yaw", value.getYaw());
+        this.set(path + ".w", value.getWorld().getName());
+        this.set(path + ".x", value.getX());
+        this.set(path + ".y", value.getY());
+        this.set(path + ".z", value.getZ());
+        this.set(path + ".pitch", value.getPitch());
+        this.set(path + ".yaw", value.getYaw());
     }
 
     public float getFloat(String path) {
-        return (float) getDouble(path);
+        return (float) this.getDouble(path);
     }
 }

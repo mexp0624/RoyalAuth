@@ -15,7 +15,7 @@ public class CmdLogout implements CommandExecutor {
     private final RoyalAuth plugin;
 
     public CmdLogout(RoyalAuth instance) {
-        plugin = instance;
+        this.plugin = instance;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CmdLogout implements CommandExecutor {
             cs.sendMessage(ChatColor.BLUE + Language.LOGGED_OUT.toString());
             ap.setLastQuitTimestamp(System.currentTimeMillis());
             ap.setLastJoinTimestamp(System.currentTimeMillis());
-            ap.logout(plugin);
+            ap.logout(this.plugin);
             return true;
         }
         return false;
