@@ -20,7 +20,29 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -38,7 +60,7 @@ public class AuthListener implements Listener {
         if (!Config.kickIfAlreadyOnline) return;
         AuthPlayer ap = AuthPlayer.getAuthPlayer(e.getPlayer());
         if (!ap.isLoggedIn()) return;
-        e.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Another player is already online with this name.");
+        e.disallow(PlayerLoginEvent.Result.KICK_OTHER, Language.ANOTHER_PLAYER_WITH_NAME.toString());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -50,8 +72,8 @@ public class AuthListener implements Listener {
         AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
         ap.setLastJoinTimestamp(System.currentTimeMillis());
         if (Config.sessionsEnabled && ap.isWithinSession()) {
-            plugin.getLogger().info(p.getName() + " was logged in via session.");
-            p.sendMessage(ChatColor.BLUE + "You have been logged in via session.");
+            plugin.getLogger().info(p.getName() + Language.WAS_LOGGED_IN_VIA_SESSION);
+            p.sendMessage(ChatColor.BLUE + Language.LOGGED_IN_VIA_SESSION.toString());
             ap.enableAfterLoginGodmode();
             ap.setLoggedIn(true);
             return;
@@ -117,7 +139,7 @@ public class AuthListener implements Listener {
         if (ap.isLoggedIn()) return;
         String[] split = e.getMessage().split(" ");
         if (split.length < 1) {
-            p.sendMessage(ChatColor.RED + "You must log in to use that command!");
+            p.sendMessage(ChatColor.RED + Language.YOU_MUST_LOGIN.toString());
             return;
         }
         String root = split[0].substring(1); // the command label (remove /)
@@ -132,7 +154,7 @@ public class AuthListener implements Listener {
                 if (Config.allowedCommands.contains(pc.getName())) return;
                 for (String alias : pc.getAliases()) if (Config.allowedCommands.contains(alias)) return;
             }
-            p.sendMessage(ChatColor.RED + "You must log in to use that command!");
+            p.sendMessage(ChatColor.RED + Language.YOU_MUST_LOGIN.toString());
             e.setCancelled(true);
         }
     }
@@ -154,7 +176,7 @@ public class AuthListener implements Listener {
         Player p = e.getPlayer();
         if (p.getName().matches(Config.usernameRegex)) return;
         e.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-        e.setKickMessage("Your username contains invalid characters!");
+        e.setKickMessage(Language.INVALID_USERNAME.toString());
     }
 
     @EventHandler

@@ -148,6 +148,33 @@ public class Metrics {
     }
 
     /**
+     * <p>Encode a key/value data pair to be used in a HTTP post request. This INCLUDES a & so the first key/value pair
+     * MUST be included manually, e.g:</p>
+     * <code>
+     * StringBuffer data = new StringBuffer();
+     * data.append(encode("guid")).append('=').append(encode(guid));
+     * encodeDataPair(data, "version", description.getVersion());
+     * </code>
+     *
+     * @param buffer the stringbuilder to append the data pair onto
+     * @param key    the key value
+     * @param value  the value
+     */
+    private static void encodeDataPair(final StringBuilder buffer, final String key, final String value) throws UnsupportedEncodingException {
+        buffer.append('&').append(encode(key)).append('=').append(encode(value));
+    }
+
+    /**
+     * Encode text as UTF-8
+     *
+     * @param text the text to encode
+     * @return the encoded text, as UTF-8
+     */
+    private static String encode(final String text) throws UnsupportedEncodingException {
+        return URLEncoder.encode(text, "UTF-8");
+    }
+
+    /**
      * Construct and create a Graph that can be used to separate specific plotters to their own graphs on the metrics
      * website. Plotters can be added to the graph object returned.
      *
@@ -353,7 +380,7 @@ public class Metrics {
         boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
         String pluginVersion = description.getVersion();
         String serverVersion = Bukkit.getVersion();
-        int playersOnline = Bukkit.getServer().getOnlinePlayers().length;
+        int playersOnline = Bukkit.getServer().getOnlinePlayers().size();
 
         // END server software specific section -- all code below does not use any code outside of this class / Java
 
@@ -470,33 +497,6 @@ public class Metrics {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    /**
-     * <p>Encode a key/value data pair to be used in a HTTP post request. This INCLUDES a & so the first key/value pair
-     * MUST be included manually, e.g:</p>
-     * <code>
-     * StringBuffer data = new StringBuffer();
-     * data.append(encode("guid")).append('=').append(encode(guid));
-     * encodeDataPair(data, "version", description.getVersion());
-     * </code>
-     *
-     * @param buffer the stringbuilder to append the data pair onto
-     * @param key    the key value
-     * @param value  the value
-     */
-    private static void encodeDataPair(final StringBuilder buffer, final String key, final String value) throws UnsupportedEncodingException {
-        buffer.append('&').append(encode(key)).append('=').append(encode(value));
-    }
-
-    /**
-     * Encode text as UTF-8
-     *
-     * @param text the text to encode
-     * @return the encoded text, as UTF-8
-     */
-    private static String encode(final String text) throws UnsupportedEncodingException {
-        return URLEncoder.encode(text, "UTF-8");
     }
 
     /**

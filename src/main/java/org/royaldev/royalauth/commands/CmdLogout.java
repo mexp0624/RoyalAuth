@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.royaldev.royalauth.AuthPlayer;
+import org.royaldev.royalauth.Language;
 import org.royaldev.royalauth.RUtils;
 import org.royaldev.royalauth.RoyalAuth;
 
@@ -25,16 +26,16 @@ public class CmdLogout implements CommandExecutor {
                 return true;
             }
             if (!(cs instanceof Player)) {
-                cs.sendMessage(ChatColor.RED + "This command is only available to players!");
+                cs.sendMessage(ChatColor.RED + Language.COMMAND_NO_CONSOLE.toString());
                 return true;
             }
             Player p = (Player) cs;
             AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
             if (!ap.isLoggedIn()) {
-                cs.sendMessage(ChatColor.RED + "You are not logged in!");
+                cs.sendMessage(ChatColor.RED + Language.NOT_LOGGED_IN.toString());
                 return true;
             }
-            cs.sendMessage(ChatColor.BLUE + "You have been logged out.");
+            cs.sendMessage(ChatColor.BLUE + Language.LOGGED_OUT.toString());
             ap.setLastQuitTimestamp(System.currentTimeMillis());
             ap.setLastJoinTimestamp(System.currentTimeMillis());
             ap.logout(plugin);

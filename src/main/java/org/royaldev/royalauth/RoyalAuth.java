@@ -1,5 +1,6 @@
 package org.royaldev.royalauth;
 
+import com.google.common.io.PatternFilenameFilter;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -11,18 +12,18 @@ import org.royaldev.royalauth.commands.CmdRegister;
 import org.royaldev.royalauth.commands.CmdRoyalAuth;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RoyalAuth extends JavaPlugin {
 
+    public static File dataFolder;
+    private final Pattern versionPattern = Pattern.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
     public Config c;
     public Logger log;
-
-    public static File dataFolder;
-
-    private final Pattern versionPattern = Pattern.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
 
     /**
      * Registers a command in the server. If the command isn't defined in plugin.yml
@@ -36,8 +37,54 @@ public class RoyalAuth extends JavaPlugin {
         try {
             jp.getCommand(command).setExecutor(ce);
         } catch (NullPointerException e) {
-            getLogger().warning("Could not register command \"" + command + "\" - not registered in plugin.yml (" + e.getMessage() + ")");
+            getLogger().warning(String.format(Language.COULD_NOT_REGISTER_COMMAND.toString(), command, e.getMessage()));
         }
+    }
+
+    private void update() {
+        final File userdataFolder = new File(dataFolder, "userdata");
+        if (!userdataFolder.exists() || !userdataFolder.isDirectory()) return;
+        for (String fileName : userdataFolder.list(new PatternFilenameFilter("(?i)^.+\\.yml$"))) {
+            String playerName = fileName.substring(0, fileName.length() - 4); // ".yml" = 4
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                UUID.fromString(playerName);
+                continue;
+            } catch (IllegalArgumentException ignored) {}
+            UUID u;
+            try {
+                u = RUtils.getUUID(playerName);
+            } catch (Exception ex) {
+                u = this.getServer().getOfflinePlayer(playerName).getUniqueId();
+            }
+            if (u == null) {
+                this.getLogger().warning(Language.ERROR.toString());
+                continue;
+            }
+            if (new File(fileName).renameTo(new File(u + ".yml"))) {
+                this.getLogger().info(String.format(Language.CONVERTED_USERDATA.toString(), fileName, u));
+            } else {
+                this.getLogger().warning(String.format(Language.COULD_NOT_CONVERT_USERDATA.toString(), fileName));
+            }
+        }
+    }
+
+    private void saveLangFile(String name) {
+        if (!new File(this.getDataFolder() + File.separator + "lang" + File.separator + name + ".properties").exists())
+            this.saveResource("lang" + File.separator + name + ".properties", false);
+    }
+
+    @Override
+    public void onDisable() {
+        getServer().getScheduler().cancelTasks(this);
+
+        for (Player p : getServer().getOnlinePlayers()) {
+            AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
+            if (ap.isLoggedIn()) ap.logout(this, false);
+        }
+
+        PConfManager.saveAllManagers();
+        PConfManager.purge();
     }
 
     @Override
@@ -48,6 +95,19 @@ public class RoyalAuth extends JavaPlugin {
 
         c = new Config(this);
         log = getLogger();
+
+        saveLangFile("en_us");
+
+        try {
+            new Language.LanguageHelper(getDataFolder() + File.separator + getConfig().getString("general.language_file", "lang/en_us.properties"));
+        } catch (IOException e) {
+            log.severe("Could not load language file: " + e.getMessage());
+            log.severe("Disabling plugin.");
+            setEnabled(false);
+            return;
+        }
+
+        if (Config.checkOldUserdata) this.update();
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new AuthListener(this), this);
@@ -71,44 +131,28 @@ public class RoyalAuth extends JavaPlugin {
                 if (matcher.group(3) == null) build = "release";
                 Metrics m = new Metrics(this);
                 Metrics.Graph g = m.createGraph("Version"); // get our custom version graph
-                g.addPlotter(
-                        new Metrics.Plotter(versionMinusBuild + "~=~" + build) {
-                            @Override
-                            public int getValue() {
-                                return 1; // this value doesn't matter
-                            }
-                        }
-                ); // add the donut graph with major version inside and build outside
+                g.addPlotter(new Metrics.Plotter(versionMinusBuild + "~=~" + build) {
+                    @Override
+                    public int getValue() {
+                        return 1; // this value doesn't matter
+                    }
+                }); // add the donut graph with major version inside and build outside
                 m.addGraph(g); // add the graph
-                if (!m.start())
-                    getLogger().info("You have Metrics off! I like to keep accurate usage statistics, but okay. :(");
-                else getLogger().info("Metrics enabled. Thank you!");
+                if (!m.start()) getLogger().info(Language.METRICS_OFF.toString());
+                else getLogger().info(Language.METRICS_ENABLED.toString());
             }
         } catch (Exception ignore) {
-            getLogger().warning("Could not start Metrics!");
+            getLogger().warning(Language.COULD_NOT_START_METRICS.toString());
         }
 
-        for (Player p : getServer().getOnlinePlayers()) {
+        for (Player p : this.getServer().getOnlinePlayers()) {
             AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
             if (ap.isLoggedIn()) continue;
             if (ap.isRegistered()) ap.createLoginReminder(this);
             else ap.createRegisterReminder(this);
         }
 
-        log.info(getDescription().getName() + " v" + getDescription().getVersion() + " enabled.");
-    }
-
-    @Override
-    public void onDisable() {
-        getServer().getScheduler().cancelTasks(this);
-
-        for (Player p : getServer().getOnlinePlayers()) {
-            AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
-            if (ap.isLoggedIn()) ap.logout(this, false);
-        }
-
-        PConfManager.saveAllManagers();
-        PConfManager.purge();
+        log.info(getDescription().getName() + " v" + getDescription().getVersion() + " " + Language.ENABLED + ".");
     }
 
 }

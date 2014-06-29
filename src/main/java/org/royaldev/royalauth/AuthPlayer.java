@@ -10,36 +10,60 @@ import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class AuthPlayer {
 
-    private AuthPlayer(String s) {
-        playerName = s;
-        pcm = PConfManager.getPConfManager(s);
+    private final static Map<UUID, AuthPlayer> authPlayers = new HashMap<UUID, AuthPlayer>();
+    private final PConfManager pcm;
+    private UUID playerUUID;
+    private String lastIPAddress;
+    private long lastJoinTimestamp = 0L;
+    private long lastLoginTimestamp = 0L;
+    private long lastQuitTimestamp = 0L;
+    private BukkitTask reminderTask = null;
+
+    private AuthPlayer(UUID u) {
+        playerUUID = u;
+        pcm = PConfManager.getPConfManager(u);
         lastJoinTimestamp = pcm.getLong("timestamps.join", 0L);
         lastLoginTimestamp = pcm.getLong("timestamps.login", 0L);
         lastQuitTimestamp = pcm.getLong("timestamps.quit", 0L);
     }
 
     private AuthPlayer(Player p) {
-        this(p.getName());
+        this(p.getUniqueId());
     }
-
-    private final static Map<String, AuthPlayer> authPlayers = new HashMap<String, AuthPlayer>();
 
     /**
      * Gets the AuthPlayer for the name of a player.
      *
-     * @param s Player name to get AuthPlayer of
+     * @param u UUID to get AuthPlayer of
      * @return AuthPlayer
      */
-    public static AuthPlayer getAuthPlayer(String s) {
+    public static AuthPlayer getAuthPlayer(UUID u) {
         synchronized (authPlayers) {
-            if (authPlayers.containsKey(s)) return authPlayers.get(s);
-            final AuthPlayer ap = new AuthPlayer(s);
-            authPlayers.put(s, ap);
+            if (authPlayers.containsKey(u)) return authPlayers.get(u);
+            final AuthPlayer ap = new AuthPlayer(u);
+            authPlayers.put(u, ap);
             return ap;
         }
+    }
+
+    /**
+     * Queries Mojang's API to get a UUID for the name, and then gets the AuthPlayer for that UUID.
+     *
+     * @param s Name
+     * @return AuthPlayer or null if there was an error
+     */
+    public static AuthPlayer getAuthPlayer(String s) {
+        UUID u;
+        try {
+            u = RUtils.getUUID(s);
+        } catch (Exception ex) {
+            return null;
+        }
+        return AuthPlayer.getAuthPlayer(u);
     }
 
     /**
@@ -49,20 +73,8 @@ public class AuthPlayer {
      * @return AuthPlayer
      */
     public static AuthPlayer getAuthPlayer(Player p) {
-        return getAuthPlayer(p.getName());
+        return getAuthPlayer(p.getUniqueId());
     }
-
-    private String playerName;
-
-    private String lastIPAddress;
-
-    private long lastJoinTimestamp = 0L;
-    private long lastLoginTimestamp = 0L;
-    private long lastQuitTimestamp = 0L;
-
-    private BukkitTask reminderTask = null;
-
-    private final PConfManager pcm;
 
     /**
      * Checks if the AP has a password set.
@@ -80,6 +92,15 @@ public class AuthPlayer {
      */
     public boolean isLoggedIn() {
         return pcm.getBoolean("login.logged_in");
+    }
+
+    /**
+     * Sets the AP's logged in status. In most cases, login() or logout() should be used.
+     *
+     * @param loggedIn true if logged in, false if not
+     */
+    public void setLoggedIn(final boolean loggedIn) {
+        pcm.set("login.logged_in", loggedIn);
     }
 
     /**
@@ -158,15 +179,6 @@ public class AuthPlayer {
     }
 
     /**
-     * Sets the AP's logged in status. In most cases, login() or logout() should be used.
-     *
-     * @param loggedIn true if logged in, false if not
-     */
-    public void setLoggedIn(final boolean loggedIn) {
-        pcm.set("login.logged_in", loggedIn);
-    }
-
-    /**
      * Turns on the god mode for post-login if enabled in the config. Will auto-expire.
      */
     public void enableAfterLoginGodmode() {
@@ -233,7 +245,7 @@ public class AuthPlayer {
      */
     public void logout(Plugin plugin, boolean createReminders) {
         Player p = getPlayer();
-        if (p == null) throw new IllegalArgumentException("That player is not online!");
+        if (p == null) throw new IllegalArgumentException(Language.PLAYER_NOT_ONLINE.toString());
         setLoggedIn(false);
         if (createReminders) {
             if (isRegistered()) createLoginReminder(plugin);
@@ -269,16 +281,6 @@ public class AuthPlayer {
     public void setLastQuitTimestamp(final long timestamp) {
         lastQuitTimestamp = timestamp;
         pcm.set("timestamps.quit", timestamp);
-    }
-
-    /**
-     * Sets the last time that an AP joined the server.
-     *
-     * @param timestamp Time in milliseconds from epoch
-     */
-    public void setLastJoinTimestamp(final long timestamp) {
-        lastJoinTimestamp = timestamp;
-        pcm.set("timestamps.join", timestamp);
     }
 
     /**
@@ -381,7 +383,16 @@ public class AuthPlayer {
      * @return Player or null if player not online
      */
     public Player getPlayer() {
-        return Bukkit.getPlayerExact(playerName);
+        return Bukkit.getPlayer(playerUUID);
+    }
+
+    /**
+     * Gets the UUID associated with this AuthPlayer.
+     *
+     * @return UUID
+     */
+    public UUID getUniqueId() {
+        return this.playerUUID;
     }
 
     /**
@@ -391,6 +402,16 @@ public class AuthPlayer {
      */
     public long getLastJoinTimestamp() {
         return lastJoinTimestamp;
+    }
+
+    /**
+     * Sets the last time that an AP joined the server.
+     *
+     * @param timestamp Time in milliseconds from epoch
+     */
+    public void setLastJoinTimestamp(final long timestamp) {
+        lastJoinTimestamp = timestamp;
+        pcm.set("timestamps.join", timestamp);
     }
 
 }

@@ -21,12 +21,12 @@ public class Hasher {
         md.update(data.getBytes());
         byte byteData[] = md.digest();
         StringBuilder sb = new StringBuilder();
-        for (byte aByteData : byteData) sb.append(Integer.toString((aByteData & 0xff) + 0x100, 16).substring(1));
+        for (byte aByteData : byteData) sb.append(Integer.toString((aByteData & 0xFF) + 0x100, 16).substring(1));
         return sb.toString();
     }
 
     public static String encrypt(String data, String type) throws NoSuchAlgorithmException {
-        String rtype = getType(type);
+        final String rtype = getType(type);
         if (rtype.equals("RAUTH")) {
             for (int i = 0; i < 25; i++) data = hash(data, rtype);
             return data;

@@ -80,3 +80,9 @@ saving:
   # locally, but it must be saved to persist. The data will be saved when the plugin is disabled, as well. This cannot
   # be set to lower than 1.
   interval: 5.0
+  # Should the plugin check for old userdata on startup? This will convert any usernames into UUIDs. This should be true
+  # at least for the first run on the UUID system.
+  check_old_userdata: true
+
+general:
+  language_file: "lang/en_us.properties"

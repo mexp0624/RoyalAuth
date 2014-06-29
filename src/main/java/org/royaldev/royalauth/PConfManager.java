@@ -10,20 +10,60 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class PConfManager extends YamlConfiguration {
 
-    private static final Map<String, PConfManager> pcms = new HashMap<String, PConfManager>();
+    private static final Map<UUID, PConfManager> pcms = new HashMap<UUID, PConfManager>();
+    private final Object saveLock = new Object();
+    private File pconfl = null;
 
-    public static PConfManager getPConfManager(Player p) {
-        return getPConfManager(p.getName());
+    /**
+     * Player configuration manager
+     *
+     * @param p Player to manage
+     */
+    PConfManager(OfflinePlayer p) {
+        super();
+        File dataFolder = RoyalAuth.dataFolder;
+        pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + p.getUniqueId() + ".yml");
+        try {
+            load(pconfl);
+        } catch (Exception ignored) {
+        }
     }
 
-    public static PConfManager getPConfManager(String s) {
+    /**
+     * Player configuration manager.
+     *
+     * @param u Player to manage
+     */
+    PConfManager(UUID u) {
+        super();
+        File dataFolder = RoyalAuth.dataFolder;
+        pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + u + ".yml");
+        try {
+            load(pconfl);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * No outside construction, please.
+     */
+    @SuppressWarnings("unused")
+    PConfManager() {
+    }
+
+    public static PConfManager getPConfManager(Player p) {
+        return getPConfManager(p.getUniqueId());
+    }
+
+    public static PConfManager getPConfManager(UUID u) {
         synchronized (pcms) {
-            if (pcms.containsKey(s)) return pcms.get(s);
-            final PConfManager pcm = new PConfManager(s);
-            pcms.put(s, pcm);
+            if (pcms.containsKey(u)) return pcms.get(u);
+            final PConfManager pcm = new PConfManager(u);
+            pcms.put(u, pcm);
             return pcm;
         }
     }
@@ -38,46 +78,6 @@ public class PConfManager extends YamlConfiguration {
         synchronized (pcms) {
             pcms.clear();
         }
-    }
-
-    private File pconfl = null;
-    private final Object saveLock = new Object();
-
-    /**
-     * Player configuration manager
-     *
-     * @param p Player to manage
-     */
-    PConfManager(OfflinePlayer p) {
-        super();
-        File dataFolder = RoyalAuth.dataFolder;
-        pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + p.getName().toLowerCase() + ".yml");
-        try {
-            load(pconfl);
-        } catch (Exception ignored) {
-        }
-    }
-
-    /**
-     * Player configuration manager.
-     *
-     * @param p Player to manage
-     */
-    PConfManager(String p) {
-        super();
-        File dataFolder = RoyalAuth.dataFolder;
-        pconfl = new File(dataFolder + File.separator + "userdata" + File.separator + p.toLowerCase() + ".yml");
-        try {
-            load(pconfl);
-        } catch (Exception ignored) {
-        }
-    }
-
-    /**
-     * No outside construction, please.
-     */
-    @SuppressWarnings("unused")
-    PConfManager() {
     }
 
     public boolean exists() {

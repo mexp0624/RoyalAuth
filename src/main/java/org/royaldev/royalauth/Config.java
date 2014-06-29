@@ -7,6 +7,35 @@ import java.util.List;
 
 public class Config {
 
+    public static boolean disableIfOnlineMode;
+    public static boolean requireLogin;
+    public static boolean kickIfAlreadyOnline;
+    public static boolean useLoginPermission;
+    public static String loginPermission;
+    public static boolean allowChat;
+    public static String chatPrefix;
+    public static boolean allowCommands;
+    public static List<String> allowedCommands;
+    public static boolean allowMovementWalk;
+    public static boolean allowMovementLook;
+    public static boolean godMode;
+    public static boolean godModeAfterLogin;
+    public static long godModeLength;
+    public static boolean remindEnabled;
+    public static long remindInterval;
+    public static long saveUserdataInterval;
+    public static boolean sessionsEnabled;
+    public static boolean sessionsCheckIP;
+    public static long sessionLength;
+    public static List<String> disallowedPasswords;
+    public static String passwordHashType;
+    public static boolean validateUsernames;
+    public static String usernameRegex;
+    public static boolean adventureMode;
+    public static boolean teleportToSpawn;
+    public static boolean kickPlayers;
+    public static long kickAfter;
+    public static boolean checkOldUserdata;
     private final RoyalAuth plugin;
 
     public Config(RoyalAuth instance) {
@@ -64,6 +93,8 @@ public class Config {
         kickPlayers = c.getBoolean("login.remind.kick.enabled");
         kickAfter = c.getLong("login.remind.kick.wait");
 
+        checkOldUserdata = c.getBoolean("saving.check_old_userdata");
+
         //-- Check for invalid inputs and set to default if invalid --//
 
         if (remindInterval < 1L) remindInterval = 30L;
@@ -72,46 +103,5 @@ public class Config {
         if (kickAfter < 0L) kickAfter = 0L;
         if (godModeLength <= 0L) godModeLength = 10L;
     }
-
-    public static boolean disableIfOnlineMode;
-    public static boolean requireLogin;
-    public static boolean kickIfAlreadyOnline;
-
-    public static boolean useLoginPermission;
-    public static String loginPermission;
-
-    public static boolean allowChat;
-    public static String chatPrefix;
-
-    public static boolean allowCommands;
-    public static List<String> allowedCommands;
-
-    public static boolean allowMovementWalk;
-    public static boolean allowMovementLook;
-
-    public static boolean godMode;
-    public static boolean godModeAfterLogin;
-    public static long godModeLength;
-
-    public static boolean remindEnabled;
-    public static long remindInterval;
-
-    public static long saveUserdataInterval;
-
-    public static boolean sessionsEnabled;
-    public static boolean sessionsCheckIP;
-    public static long sessionLength;
-
-    public static List<String> disallowedPasswords;
-    public static String passwordHashType;
-
-    public static boolean validateUsernames;
-    public static String usernameRegex;
-
-    public static boolean adventureMode;
-    public static boolean teleportToSpawn;
-
-    public static boolean kickPlayers;
-    public static long kickAfter;
 
 }
