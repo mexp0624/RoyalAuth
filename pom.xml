@@ -22,6 +22,10 @@
     </build>
     <repositories>
         <repository>
+            <id>spigot</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
             <id>royal-repo</id>
             <url>http://minor.royaldev.org:8081/nexus/content/groups/public/</url>
         </repository>
@@ -30,7 +34,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>LATEST</version>
+            <version>1.8-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <properties>
