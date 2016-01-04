@@ -1,6 +1,6 @@
-name: RoyalAuth
+name: RoyalAuthPlus
 main: org.royaldev.royalauth.RoyalAuth
-version: ${pluginversion}
+version: 3.2.0
 author: jkcclemens
 website: http://dev.royaldev.org
 description: A security-based plugin that locks player accounts with passwords that must be entered before the player can play.
@@ -21,10 +21,9 @@ commands:
   register:
     description: Registers a player.
     usage: /<command> [password]
-  changepassword:
+  passwd:
     description: Changes a player's password.
     usage: /<command> [oldPassword] [newPassword]
-    aliases: [changepass, passchange]
 
 permissions:
   rauth.login:

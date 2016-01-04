@@ -1,6 +1,6 @@
 login:
   # Should the plugin be disabled if online mode is on?
-  disable_if_online_mode: false
+  disable_if_online_mode: true
   # Require a login to play?
   require: true
   permission:
@@ -28,12 +28,14 @@ login:
       look_around: true
       # Allow walking around (includes changing vision)?
       walk: false
+    # add BLINDNESS Potion
+    blind: true
   godmode:
     # Should players that have yet to login have godmode?
     enabled: true
     after_login:
       # Enable god mode after the player logs in?
-      enabled: true
+      enabled: false
       # Length in seconds
       length: 10.0
   # Set players that are not logged in to adventure mode?
@@ -47,14 +49,14 @@ login:
     interval: 10.0
     kick:
       # Kick players that take too long to log in?
-      enabled: false
+      enabled: true
       # How long to wait for a player to login before kicking them in seconds
       wait: 30.0
 
 # Login sessions. If you log out and log back in, you will not be prompted for a password again if these are configured.
 sessions:
   # Enabled login sessions?
-  enabled: true
+  enabled: false
   # Length in minutes for a session to last. A session starts at player quit.
   length: 15.0
   # Check the IP of the player logging in again to make sure it matches? This should probably be true.
@@ -68,7 +70,7 @@ usernames:
 
 passwords:
   # Encryption type to use on passwords. Can be any Java type or RAUTH, which is SHA-512 rehashed 25 times.
-  hash_type: "RAUTH"
+  hash_type: "mexpAUTH"
   # Passwords to reject on registration and warn about on login. Case-insensitive
   disallowed:
   - "password"
