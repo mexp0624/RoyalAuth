@@ -1,6 +1,6 @@
 name: RoyalAuthPlus
 main: org.royaldev.royalauth.RoyalAuth
-version: 3.2.0
+version: ${pluginversion}
 author: jkcclemens
 website: http://dev.royaldev.org
 description: A security-based plugin that locks player accounts with passwords that must be entered before the player can play.

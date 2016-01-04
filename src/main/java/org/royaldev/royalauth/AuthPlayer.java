@@ -129,48 +129,6 @@ public class AuthPlayer {
 		return validUntil > System.currentTimeMillis();
 	}
 
-//	/**
-//	 * Changes the player's password. Requires the old password for security
-//	 * verification.
-//	 *
-//	 * @param hashedPassword
-//	 *                The password hash of the new password.
-//	 * @param oldHashedPassword
-//	 *                The password hash of the old password.
-//	 * @return true if password changed, false if not
-//	 */
-//	public boolean setHashedPassword(String hashedPassword, String oldHashedPassword, final String hashType) {
-//		if (!this.getPasswordHash().equals(oldHashedPassword))
-//			return false;
-//		this.pcm.set("login.password", hashedPassword);
-//		this.pcm.set("login.hash", hashType.toUpperCase());
-//		return true;
-//	}
-
-//	/**
-//	 * Changes the player's password. Requires the old password for security
-//	 * verification.
-//	 *
-//	 * @param rawPassword
-//	 *                Plaintext new password
-//	 * @param rawOldPassword
-//	 *                Plaintext old password
-//	 * @param hashType
-//	 *                Hashtypes to be used on these passwords
-//	 * @return true if password changed, false if not
-//	 */
-//	public boolean setPassword(String rawPassword, String rawOldPassword, final String hashType) {
-//		final String oldPasswordHash = (!getHashType().equalsIgnoreCase(hashType)) ? getHashType() : hashType;
-//		try {
-//			rawPassword = Hasher.encrypt(rawPassword, hashType);
-//			rawOldPassword = Hasher.encrypt(rawOldPassword, oldPasswordHash);
-//		} catch (NoSuchAlgorithmException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return this.setHashedPassword(rawPassword, rawOldPassword, hashType);
-//	}
-
 	/**
 	 * Gets the hashed password currently set for the AP.
 	 *
@@ -197,22 +155,6 @@ public class AuthPlayer {
 	protected void setSalt(String salt) {
 		this.pcm.set("login.salt", salt);
 	}
-
-//	/**
-//	 * Sets the AP's password.
-//	 *
-//	 * @param newPasswordHash
-//	 *                An already encrypted password
-//	 * @param hashType
-//	 *                What type of hash was used to encrypt the password
-//	 *                (Java type)
-//	 * @return true
-//	 */
-//	public boolean setHashedPassword(String newPasswordHash, final String hashType) {
-//		this.pcm.set("login.password", newPasswordHash);
-//		this.pcm.set("login.hash", hashType);
-//		return true;
-//	}
 
 	/**
 	 * Sets the AP's password.
@@ -250,8 +192,6 @@ public class AuthPlayer {
 			e.printStackTrace();
 			return false;
 		}
-//		this.pcm.set("login.password", rawPassword);
-//		this.pcm.set("login.hash", hashType);
 		this.setHashedPassword(rawPassword, salt, hashType);
 		return true;
 	}
@@ -267,15 +207,10 @@ public class AuthPlayer {
 		final String salt = this.getSalt();
 		final String check;
 		String hashType = (!getHashType().equalsIgnoreCase(Config.passwordHashType)) ? getHashType() : Config.passwordHashType;
-//		System.out.println("salt: " + salt);
-//		System.out.println("hash: " + hash);
-//		System.out.println("raw: " + rawpasswd);
 		if(salt != null){
 			check = Hasher.encrypt(rawpasswd, salt, hashType);
-//			System.out.println("check: " + check);
 		}else{
 			check = Hasher.encrypt(rawpasswd, hashType);
-//			System.out.println("old_check: " + check);
 		}
 		return check.equals(hash);
 	}

@@ -17,14 +17,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Logger;
-//import java.util.regex.Matcher;
-//import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RoyalAuth extends JavaPlugin {
 
 	public static File dataFolder;
-	//private final Pattern versionPattern = Pattern
-	//		.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
+	private final Pattern versionPattern = Pattern.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
 	public Config c;
 	public Logger log;
 	public org.apache.logging.log4j.core.Logger CoreLog;
@@ -118,7 +117,7 @@ public class RoyalAuth extends JavaPlugin {
 			this.saveDefaultConfig();
 
 		this.c = new Config(this);
-		//this.log = this.getLogger();
+		this.log = this.getLogger();
 		
 		// Filter logs
 		this.CoreLog = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
@@ -169,7 +168,7 @@ public class RoyalAuth extends JavaPlugin {
 				ap.createRegisterReminder(this);
 		}
 
-		//this.log.info(this.getDescription().getName() + " v" + this.getDescription().getVersion() + " " + Language.ENABLED + ".");
+		this.log.info(this.getDescription().getName() + " v" + this.getDescription().getVersion() + " " + Language.ENABLED + ".");
 	}
 
 }
