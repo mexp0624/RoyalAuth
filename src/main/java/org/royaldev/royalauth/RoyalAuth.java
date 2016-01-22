@@ -17,13 +17,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
 
 public class RoyalAuth extends JavaPlugin {
 
 	public static File dataFolder;
-	private final Pattern versionPattern = Pattern.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
+	//private final Pattern versionPattern = Pattern
+	//		.compile("((\\d+\\.?){3})(\\-SNAPSHOT)?(\\-local\\-(\\d{8}\\.\\d{6})|\\-(\\d+))?");
 	public Config c;
 	public Logger log;
 	public org.apache.logging.log4j.core.Logger CoreLog;
@@ -117,7 +118,7 @@ public class RoyalAuth extends JavaPlugin {
 			this.saveDefaultConfig();
 
 		this.c = new Config(this);
-		this.log = this.getLogger();
+		//this.log = this.getLogger();
 		
 		// Filter logs
 		this.CoreLog = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
@@ -130,10 +131,6 @@ public class RoyalAuth extends JavaPlugin {
 		//commandFilter.prevFilter = log.getFilter();
 		//this.log.setFilter(commandFilter);
 		
-		if (this.getServer().getOnlineMode() && Config.disableIfOnlineMode){
-			this.EN = false;
-		}
-
 		this.saveLangFile("en_us");
 
 		try {
@@ -149,8 +146,12 @@ public class RoyalAuth extends JavaPlugin {
 		if (Config.checkOldUserdata)
 			this.update();
 
-		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvents(new AuthListener(this), this);
+		if (this.getServer().getOnlineMode() && Config.disableIfOnlineMode){
+			this.EN = false;
+		}else{
+			PluginManager pm = this.getServer().getPluginManager();
+			pm.registerEvents(new AuthListener(this), this);
+		}
 
 		this.registerCommand(new CmdRoyalAuth(this), "royalauth", this);
 		this.registerCommand(new CmdLogin(this), "login", this);
@@ -162,13 +163,14 @@ public class RoyalAuth extends JavaPlugin {
 			AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 			if (ap.isLoggedIn())
 				continue;
+			ap.setLastJoinTimestamp(System.currentTimeMillis());
 			if (ap.isRegistered())
 				ap.createLoginReminder(this);
 			else
 				ap.createRegisterReminder(this);
 		}
 
-		this.log.info(this.getDescription().getName() + " v" + this.getDescription().getVersion() + " " + Language.ENABLED + ".");
+		//this.log.info(this.getDescription().getName() + " v" + this.getDescription().getVersion() + " " + Language.ENABLED + ".");
 	}
 
 }

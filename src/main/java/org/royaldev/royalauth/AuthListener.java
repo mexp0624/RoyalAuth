@@ -67,7 +67,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void sameName(PlayerLoginEvent e) {
-		if (!this.plugin.EN) return;
 		//System.out.println("[PlayerLoginEvent]KickMag: " + e.getKickMessage());
 		if (!Config.kickIfAlreadyOnline)
 			return;
@@ -79,7 +78,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent e) {
-		if (!this.plugin.EN) return;
 		if (!Config.requireLogin)
 			return;
 		Player p = e.getPlayer();
@@ -106,7 +104,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void godModeAfterLogin(EntityDamageEvent e) {
-		if (!this.plugin.EN) return;
 		if (!Config.godModeAfterLogin)
 			return;
 		if (!(e.getEntity() instanceof Player))
@@ -121,7 +118,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void quit(PlayerQuitEvent e) {
-		if (!this.plugin.EN) return;
 		if (!Config.sessionsEnabled)
 			return;
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(e.getPlayer());
@@ -135,13 +131,11 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void kick(PlayerKickEvent e) {
-		if (!this.plugin.EN) return;
 		quit(new PlayerQuitEvent(e.getPlayer(), e.getLeaveMessage()));
 	}
 
 	@EventHandler
 	public void onMove(PlayerMoveEvent e) {
-		if (!this.plugin.EN) return;
 		if (Config.allowMovementWalk)
 			return;
 		Player p = e.getPlayer();
@@ -157,7 +151,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -171,7 +164,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e) {
-		if (!this.plugin.EN) return;
 		if (Config.allowCommands)
 			return;
 		Player p = e.getPlayer();
@@ -206,7 +198,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onDamage(EntityDamageEvent e) {
-		if (!this.plugin.EN) return;
 		if (!Config.godMode)
 			return;
 		if (!(e.getEntity() instanceof Player))
@@ -221,7 +212,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onLogin(PlayerLoginEvent e) {
-		if (!this.plugin.EN) return;
 		if (!Config.validateUsernames)
 			return;
 		Player p = e.getPlayer();
@@ -233,7 +223,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -243,7 +232,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onDealDamage(EntityDamageByEntityEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getDamager() instanceof Player))
 			return;
 		Player p = (Player) e.getDamager();
@@ -255,7 +243,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -265,7 +252,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -275,7 +261,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onInventory(InventoryClickEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getWhoClicked() instanceof Player))
 			return;
 		Player p = (Player) e.getWhoClicked();
@@ -287,7 +272,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void sign(SignChangeEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -297,7 +281,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void blockDamage(BlockDamageEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -307,7 +290,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void enchantItem(EnchantItemEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getEnchanter();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -317,7 +299,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onPrepareEnchant(PrepareItemEnchantEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getEnchanter();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -327,7 +308,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void playerPortal(PlayerPortalEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -337,7 +317,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -347,7 +326,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onPickup(PlayerPickupItemEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -357,7 +335,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onBreakHanging(HangingBreakByEntityEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getRemover() instanceof Player))
 			return;
 		Player p = (Player) e.getRemover();
@@ -369,7 +346,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onPlaceHanging(HangingPlaceEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -379,7 +355,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onCraft(CraftItemEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getWhoClicked() instanceof Player))
 			return;
 		Player p = (Player) e.getWhoClicked();
@@ -391,7 +366,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onOpen(InventoryOpenEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getPlayer() instanceof Player))
 			return;
 		Player p = (Player) e.getPlayer();
@@ -403,7 +377,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onAnimate(PlayerAnimationEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -413,7 +386,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onEnterBed(PlayerBedEnterEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -423,7 +395,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onEmpty(PlayerBucketEmptyEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -433,7 +404,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onFill(PlayerBucketFillEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -443,7 +413,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onFish(PlayerFishEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -453,7 +422,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onGamemode(PlayerGameModeChangeEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -463,7 +431,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onIntEntity(PlayerInteractEntityEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -473,7 +440,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onItemConsume(PlayerItemConsumeEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -483,7 +449,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void onShear(PlayerShearEntityEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -493,7 +458,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void toggleSneak(PlayerToggleSneakEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -503,7 +467,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void toggleFly(PlayerToggleFlightEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -513,7 +476,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void toggleSprint(PlayerToggleSprintEvent e) {
-		if (!this.plugin.EN) return;
 		Player p = e.getPlayer();
 		AuthPlayer ap = AuthPlayer.getAuthPlayer(p);
 		if (ap.isLoggedIn())
@@ -523,7 +485,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void enterVehicle(VehicleEnterEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getEntered() instanceof Player))
 			return;
 		Player p = (Player) e.getEntered();
@@ -535,7 +496,6 @@ public class AuthListener implements Listener {
 
 	@EventHandler
 	public void exitVehicle(VehicleExitEvent e) {
-		if (!this.plugin.EN) return;
 		if (!(e.getExited() instanceof Player))
 			return;
 		Player p = (Player) e.getExited();

@@ -41,7 +41,7 @@ public class CmdRoyalAuth implements CommandExecutor {
 			switch (subcommand) {
 			case "help":
 				cs.sendMessage(ChatColor.BLUE + Language.ADMIN_HELP.toString());
-				cs.sendMessage(ChatColor.GRAY + "  /" + label + " changepassword [player] [newpassword]"
+				cs.sendMessage(ChatColor.GRAY + "  /" + label + " chpwd [player] [newpassword]"
 						+ ChatColor.BLUE + " - " + Language.HELP_CHANGEPASSWORD);
 				cs.sendMessage(ChatColor.GRAY + "  /" + label + " login [player]" + ChatColor.BLUE
 						+ " - " + Language.HELP_LOGIN);
@@ -54,6 +54,8 @@ public class CmdRoyalAuth implements CommandExecutor {
 				cs.sendMessage(ChatColor.GRAY + "  /" + label + " help" + ChatColor.BLUE + " - "
 						+ Language.HELP_HELP);
 				break;
+			case "passwd":
+			case "chpwd":
 			case "changepassword": {
 				if (args.length < 3) {
 					cs.sendMessage(ChatColor.RED + Language.NOT_ENOUGH_ARGUMENTS.toString() + " "
